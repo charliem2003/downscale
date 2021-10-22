@@ -90,17 +90,15 @@ Charles Marsh <\email{charliem2003@gmail.com}> with input from
   Louise Barwell and Cang Hui.
 }
 \references{
-Hui, C. (2009). On the scaling patterns of species spatial
-  distribution and association. \emph{Journal of Theoretical Biology} 261,
-  481-487.
+Hui, C. (2009). On the scaling patterns of species spatial distribution and association. \emph{Journal of Theoretical Biology} 261, 481-487.
 
-Hui, C., McGeoch, M.A., & Warren, M. (2006). A spatially explicit
-  approach to estimating species occupancy and spatial correlation.
-  \emph{Journal of Animal Ecology} 7, 140-147.
+Hui, C., McGeoch, M.A., & Warren, M. (2006). A spatially explicit approach to estimating species occupancy and spatial correlation. \emph{Journal of Animal Ecology} 7, 140-147.
   
-  Groom, Q., Marsh, C.J., Gavish, Y. Kunin, W.E. (2018). How to predict fine resolution occupancy from coarse occupancy data, \emph{Methods in Ecology and Evolution}. In press.
-  
-  Marsh, C.J, Barwell, L.J., Gavish, Y., Kunin, W.E. (2018). downscale: An R package for downscaling species occupancy from coarse-grain data to predict occupancy at fine-grain sizes, \emph{Journal of Statistical Software, Code Snippets} 86(3), 1-20.
+Groom, Q., Marsh, C.J., Gavish, Y. Kunin, W.E. (2018). How to predict fine resolution occupancy from coarse occupancy data, \emph{Methods in Ecology and Evolution}. 9(11), 2273-2284.
+
+Marsh, C.J, Barwell, L.J., Gavish, Y., Kunin, W.E. (2018). downscale: An R package for downscaling species occupancy from coarse-grain data to predict occupancy at fine-grain sizes, \emph{Journal of Statistical Software} 86(Code Snippet 3), 1-20.
+
+Marsh, C.J, Gavish, Y., Kunin, W.E., Brummitt N.A. (2019). Mind the gap: Can downscaling Area of Occupancy overcome sampling gaps when assessing IUCN Red List status?, \emph{Diversity and Distributions} 25, 1832-1845.
 }
 \seealso{
 See \code{\link{downscale}} for estimating parameters of a

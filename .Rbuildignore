@@ -2,3 +2,10 @@
 ^\.Rproj\.user$     # used for temporary files. 
 ^NEWS\.md$          # A news file
 ^TODO\.md$          # A to do file
+^downscale.Rproj
+^\.RProj.user
+^.gitignore
+^README.md
+^.Rhistory
+^\.git
+

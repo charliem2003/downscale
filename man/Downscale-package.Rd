@@ -8,8 +8,8 @@ Downscaling Species Occupancy
 \tabular{ll}{
 Package: \tab downscale\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
-Date: \tab 2015-05-18\cr
+Version: \tab 4.0-0\cr
+Date: \tab 2021-10-22\cr
 License: \tab GPL-2\cr
 }
 }
@@ -56,15 +56,13 @@ Azaele, S., Cornell, S.J., & Kunin, W.E. (2012). Downscaling species occupancy f
 
 Barwell, L.J., Azaele, S., Kunin, W.E., & Isaac, N.J.B. (2014). Can coarse-grain patterns in insect atlas data predict local occupancy? \emph{Diversity and Distributions} 20, 895-907.
 
-Hui, C. (2009). On the scaling patterns of species spatial
-  distribution and association. \emph{Journal of Theoretical Biology} 261,
-  481-487.
+Hui, C. (2009). On the scaling patterns of species spatial distribution and association. \emph{Journal of Theoretical Biology} 261, 481-487.
 
-Hui, C., McGeoch, M.A., & Warren, M. (2006). A spatially explicit
-  approach to estimating species occupancy and spatial correlation.
-  \emph{Journal of Animal Ecology} 7, 140-147.
+Hui, C., McGeoch, M.A., & Warren, M. (2006). A spatially explicit approach to estimating species occupancy and spatial correlation. \emph{Journal of Animal Ecology} 7, 140-147.
   
-Groom, Q., Marsh, C.J., Gavish, Y. Kunin, W.E. (2018). How to predict fine resolution occupancy from coarse occupancy data, \emph{Methods in Ecology and Evolution}. In press.
+Groom, Q., Marsh, C.J., Gavish, Y. Kunin, W.E. (2018). How to predict fine resolution occupancy from coarse occupancy data, \emph{Methods in Ecology and Evolution}. 9(11), 2273-2284.
 
-Marsh, C.J, Barwell, L.J., Gavish, Y., Kunin, W.E. (2018). downscale: An R package for downscaling species occupancy from coarse-grain data to predict occupancy at fine-grain sizes, \emph{Journal of Statistical Software, Code Snippets} 86(3), 1-20.
+Marsh, C.J, Barwell, L.J., Gavish, Y., Kunin, W.E. (2018). downscale: An R package for downscaling species occupancy from coarse-grain data to predict occupancy at fine-grain sizes, \emph{Journal of Statistical Software} 86(Code Snippet 3), 1-20.
+
+Marsh, C.J, Gavish, Y., Kunin, W.E., Brummitt N.A. (2019). Mind the gap: Can downscaling Area of Occupancy overcome sampling gaps when assessing IUCN Red List status?, \emph{Diversity and Distributions} 25, 1832-1845.
 }

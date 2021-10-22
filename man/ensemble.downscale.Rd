@@ -123,17 +123,15 @@ Charles Marsh <\email{charliem2003@gmail.com}> with input from
   Louise Barwell.
 }
 \references{
-Azaele, S., Cornell, S.J., & Kunin, W.E. (2012). Downscaling
-  species occupancy from coarse spatial scales. \emph{Ecological
-  Applications} 22, 1004-1014.
+Azaele, S., Cornell, S.J., & Kunin, W.E. (2012). Downscaling species occupancy from coarse spatial scales. \emph{Ecological Applications} 22, 1004-1014.
 
-Barwell, L.J., Azaele, S., Kunin, W.E., & Isaac, N.J.B. (2014).
-  Can coarse-grain patterns in insect atlas data predict local occupancy?
-  \emph{Diversity and Distributions} 20, 895-907.
+Barwell, L.J., Azaele, S., Kunin, W.E., & Isaac, N.J.B. (2014). Can coarse-grain patterns in insect atlas data predict local occupancy? \emph{Diversity and Distributions} 20, 895-907.
   
-Groom, Q., Marsh, C.J., Gavish, Y. Kunin, W.E. (2018). How to predict fine resolution occupancy from coarse occupancy data, \emph{Methods in Ecology and Evolution}. In press.
-  
-  Marsh, C.J, Barwell, L.J., Gavish, Y., Kunin, W.E. (2018). downscale: An R package for downscaling species occupancy from coarse-grain data to predict occupancy at fine-grain sizes, \emph{Journal of Statistical Software, Code Snippets} 86(3), 1-20.
+Groom, Q., Marsh, C.J., Gavish, Y. Kunin, W.E. (2018). How to predict fine resolution occupancy from coarse occupancy data, \emph{Methods in Ecology and Evolution}. 9(11), 2273-2284.
+
+Marsh, C.J, Barwell, L.J., Gavish, Y., Kunin, W.E. (2018). downscale: An R package for downscaling species occupancy from coarse-grain data to predict occupancy at fine-grain sizes, \emph{Journal of Statistical Software} 86(Code Snippet 3), 1-20.
+
+Marsh, C.J, Gavish, Y., Kunin, W.E., Brummitt N.A. (2019). Mind the gap: Can downscaling Area of Occupancy overcome sampling gaps when assessing IUCN Red List status?, \emph{Diversity and Distributions} 25, 1832-1845.
 }
 \seealso{
 See \code{\link{upgrain}} for creating objects of class \code{"upgrain"}. See \code{\link{downscale}} and \code{\link{predict.downscale}}, and \code{link{hui.downscale}} for downscaling models individually.

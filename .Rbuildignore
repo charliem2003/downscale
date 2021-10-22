@@ -1,0 +1,4 @@
+^.*\.Rproj$         # Automatically added by RStudio,
+^\.Rproj\.user$     # used for temporary files. 
+^NEWS\.md$          # A news file
+^TODO\.md$          # A to do file

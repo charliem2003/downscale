@@ -418,9 +418,9 @@ records <- records$data
 
 In this tutorial we will instead load a copy of the data already available in this package.
 ```{r}
-recordsFile <- system.file("extdata", "Polyommatus_coridon_gbif_records.csv",
+recordsFile <- system.file("extdata", "Polyommatus_coridon_gbif_records.txt",
                            package = "downscale")
-records <- read.csv(recordsFile, header = TRUE)
+records <- read.table(recordsFile, header = TRUE)
 ```
 
 Whichever way you have got the data (either downloading your own set or loading in the data frame stored in the package), for our purposes we only need to extract the coordinates of the occurrences.

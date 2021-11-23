@@ -1,17 +1,18 @@
 ################################################################################
 # 
 # ensemble.downscale.R
-# Version 1.2
+# Version 1.3
 # 13/03/2015
 #
 # Updates:
+#   26/10/2021: uses on.exit to return to original par settings
 #   24/11/2016: Bug fixed with apply in error checking
 #   13/03/2015: if 0's predicted don't plot them
-#   24/02/2015 means calculated as mean of log occupancies
-#   24/02/2015 warning messages for inconsistent results
-#   23/02/2015 different tolerances allowed for modelling and predicting
-#   05/02/2015 plot = TRUE argument added
-#   05/02/2015 improved warning control
+#   24/02/2015: means calculated as mean of log occupancies
+#   24/02/2015: warning messages for inconsistent results
+#   23/02/2015: different tolerances allowed for modelling and predicting
+#   05/02/2015: plot = TRUE argument added
+#   05/02/2015: improved warning control
 #
 # Ensemble modelling
 #
@@ -172,8 +173,8 @@ ensemble.downscale <- function(occupancies,
   
   # plotting
   if (plot == TRUE) {
-    par.original <- par()
-    par.original <- list(mfrow = par.original$mfrow, mar = par.original$mar)
+    parOrig <- par(no.readonly = TRUE)
+    on.exit(par(parOrig))
     par(mfrow = c(3, ceiling(length(model.list) / 3)), mar = c(5, 5, 3, 1))
     
     for (i in 1:length(model.list)) {
@@ -203,7 +204,6 @@ ensemble.downscale <- function(occupancies,
              lwd=2,
              col = "red")
     }
-    par(mfrow = par.original$mfrow, mar = par.original$mar)
   }
   output <- list(Occupancy = all.predicted,
                  AOO = aoo.predicted)

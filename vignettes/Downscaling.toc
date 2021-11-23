@@ -1,9 +1,0 @@
-\contentsline {section}{\numberline {1}Introduction to downscaling}{2}{section.1}
-\contentsline {section}{\numberline {2}Using the downscale package}{4}{section.2}
-\contentsline {section}{\numberline {3}Package tutorial}{6}{section.3}
-\contentsline {subsection}{\numberline {3.1}A quick example}{6}{subsection.3.1}
-\contentsline {subsection}{\numberline {3.2}Preparing atlas data for downscaling}{8}{subsection.3.2}
-\contentsline {subsection}{\numberline {3.3}Downscaling the atlas data - more detailed examples}{11}{subsection.3.3}
-\contentsline {subsection}{\numberline {3.4}Ensemble modelling}{14}{subsection.3.4}
-\contentsline {subsection}{\numberline {3.5}Creating atlas data from point records}{20}{subsection.3.5}
-\contentsline {section}{\numberline {4}Bibliography}{29}{section.4}

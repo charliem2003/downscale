@@ -21,6 +21,7 @@ area of occupancy will be predicted.}
 
 \item{\dots}{arguments, including graphical parameters for \code{\link{plot.predict.downscale}}, passed to other methods.}
 }
+
 \value{
 \code{predict} returns an object of class \code{'predict.downscale'} with three
   objects:

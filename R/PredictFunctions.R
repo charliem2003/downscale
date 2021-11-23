@@ -110,8 +110,8 @@ PredictINB <- function(par, area) {
   #   par: dataframe containing parameters C and b of the Improved 
   #        Negative Binomial model
   #   area: Grain size (km2) to be predicted
-  AOO <- log(1 - ((par$C * area ^ (par$b - 1))^
-                ((par$gamma * area) / (1 - par$C * area ^ (par$b - 1)))))
+  AOO <- log(1 - ((par$C * area ^ (par$b - 1)) ^
+                    ((par$gamma * area) / (1 - par$C * area ^ (par$b - 1)))))
   return(AOO)
 }
 
@@ -149,10 +149,12 @@ PredictThomas <- function(par, area, extent, tolerance = 1e-6){
   #   tolerance: tolerance of the integration. The smaller the number the
   #     greater the accuracy but longer the processing time
   AOO <- sapply(1:length(area), 
-                function(i) log(1 - exp(-par$rho * espA(par = par,
-                                                        area = area[i],
-                                                        extent = extent,
-                                                        tolerance = tolerance)
-                                        )))
+                function(i) {
+                  log(1 - exp(-par$rho * espA(par = par,
+                                              area = area[i],
+                                              extent = extent,
+                                              tolerance = tolerance)))
+                }
+  )
   return(AOO)
 }

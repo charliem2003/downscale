@@ -5,6 +5,7 @@
 # 08/05/2015
 #
 # Updates:
+#   22/11/2021: basic reformatting
 #   08/05/2015: extent now required
 #   03/02/2015: output defined as class 'downscale'
 #   03/02/2015: observed data included in output
@@ -84,51 +85,36 @@ downscale <- function(occupancies,
     starting_params <- NULL
   }
   
-  if ((model == "Nachman") | (model == "PL") | (model == "Logis") | 
-      (model == "Poisson") | (model == "NB") | (model == "GNB") | 
-      (model == "INB")){
-    optim.pars <- suppressWarnings(OptimiseParameters(area =
-                                                        input.data[!is.na(input.data[, "Occ"]),
-                                                                   "Cell.area"], 
-                                                      observed = 
-                                                        input.data[!is.na(input.data[, "Occ"]),
-                                                                   "Occ"],
-                                                      model = model,
-                                                      starting.params = starting_params))
+  if((model == "Nachman") | (model == "PL") | (model == "Logis") | 
+     (model == "Poisson") | (model == "NB") | (model == "GNB") | 
+     (model == "INB")) {
+    optim.pars <- suppressWarnings(
+      OptimiseParameters(area = input.data$Cell.area[!is.na(input.data$Occ)],
+                         observed = input.data$Occ[!is.na(input.data$Occ)],
+                         model = model,
+                         starting.params = starting_params))
   }
   
-  if (model == "Logis") { 
+  if(model == "Logis") { 
     optim.pars <- suppressWarnings(
-      OptimiseParametersLogis(area =
-                                input.data[!is.na(input.data[,"Occ"]),
-                                           "Cell.area"], 
-                              observed = 
-                                input.data[!is.na(input.data[,"Occ"]),
-                                           "Occ"],
+      OptimiseParametersLogis(area = input.data$Cell.area[!is.na(input.data$Occ)], 
+                              observed = input.data$Occ[!is.na(input.data$Occ)],
                               model = model,
                               starting.params = starting_params))
   }
   
-  if (model == "GNB") { 
+  if(model == "GNB") { 
     optim.pars <- suppressWarnings(
-      OptimiseParametersGNB(area =
-                              input.data[!is.na(input.data[,"Occ"]),
-                                         "Cell.area"], 
-                            observed = 
-                              input.data[!is.na(input.data[,"Occ"]),
-                                         "Occ"],
+      OptimiseParametersGNB(area = input.data$Cell.area[!is.na(input.data$Occ)], 
+                            observed = input.data$Occ[!is.na(input.data$Occ)],
                             model = model,
                             starting.params = starting_params))
   }
   
   if (model == "FNB") { 
     optim.pars <- suppressWarnings(
-      OptimiseParametersFNB(area =
-                              input.data[!is.na(input.data[,"Occ"]),
-                                         "Cell.area"], 
-                            observed = 
-                              input.data[!is.na(input.data[,"Occ"]),
-                                         "Occ"],
+      OptimiseParametersFNB(area = input.data$Cell.area[!is.na(input.data$Occ)], 
+                            observed = input.data$Occ[!is.na(input.data$Occ)],
                             extent = extent,
                             model = model,
                             starting.params = starting_params))
@@ -136,12 +122,8 @@ downscale <- function(occupancies,
   
   if (model == "Thomas") { 
     optim.pars <- suppressWarnings(
-      OptimiseParametersThomas(area =
-                                 input.data[!is.na(input.data[,"Occ"]),
-                                            "Cell.area"], 
-                               observed = 
-                                 input.data[!is.na(input.data[,"Occ"]),
-                                            "Occ"],
+      OptimiseParametersThomas(area = input.data$Cell.area[!is.na(input.data$Occ)], 
+                               observed = input.data$Occ[!is.na(input.data$Occ)],
                                extent = extent,
                                model = model,
                                tolerance = tolerance,
@@ -149,10 +131,10 @@ downscale <- function(occupancies,
   }
   observed <- data.frame("Cell.area" = input.data[,"Cell.area"],
                          "Occupancy" = input.data[,"Occ"])
-  output <- list("model" = model,
-                 "pars" = unlist(optim.pars),
+  output <- list("model"    = model,
+                 "pars"     = unlist(optim.pars),
                  "observed" = observed,
-                 "extent" = extent)
+                 "extent"   = extent)
   class(output) <- "downscale"
   return(output)
 }

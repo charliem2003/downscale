@@ -3,7 +3,7 @@
 \title{Exploration of trade-offs in threshold selection for upgraining}
 \usage{
 upgrain.threshold(atlas.data, cell.width = NULL, scales,
-                  thresholds = seq(0, 1, 0.01))
+                  thresholds = seq(0, 1, 0.01), plot = TRUE)
 }
 \arguments{
 \item{atlas.data}{either a raster file of presence-absence; an object of class SpatialPointsDataFrame atlas data where the data frame contains a single column of presence (1) and absences (0); or a data frame of sampled cells, which must contain columns named 'x', 'y' and 'presence'.}
@@ -15,6 +15,8 @@ upgrain.threshold(atlas.data, cell.width = NULL, scales,
   cells, 4x4 cells and 8x8 cells.}
   
 \item{thresholds}{a vector of thresholds between and including 0 and 1 for the quantity of unsampled NA cells that can be included.}
+
+\item{plot}{Two sets of four plots (hit return to see the next set). Default = TRUE.}
 }
 \value{
 Returns a list contatining two objects:

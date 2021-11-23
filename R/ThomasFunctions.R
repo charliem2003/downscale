@@ -41,11 +41,11 @@ espA <- function(par, area, extent, tolerance = 1e-6) {
   #              for greater accuracy but longer processing times
   ext <- extent
   return(ext - cubature::adaptIntegrate(isonormdist,
-                                    area = area,
-                                    mu = par$mu,
-                                    sigma = par$sigma,
-                                    tol = tolerance,
-                                    lowerLimit = rep(-sqrt(ext) / 2,2),
-                                    upperLimit = rep(sqrt(ext) / 2,2)) [[1]])
+                                       area = area,
+                                       mu = par$mu,
+                                       sigma = par$sigma,
+                                       tol = tolerance,
+                                       lowerLimit = rep(-sqrt(ext) / 2, 2),
+                                       upperLimit = rep(sqrt(ext) / 2, 2))[[1]])
 }
 

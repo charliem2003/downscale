@@ -1,10 +1,11 @@
 ################################################################################
 # 
 # predict.downscale.R
-# Version 1.2
+# Version 1.3
 # 30/01/2015
 #
 # Updates:
+#   26/10/2021: uses on.exit to return to original par settings
 #   24/11/2016: Bug fixed with apply in error checking
 #   13/03/2015: if 0's predicted don't plot them
 #   03/02/2015: plot function added
@@ -77,13 +78,11 @@ predict.downscale <- function(object,
   class(output) <- "predict.downscale"
   
   if (plot == TRUE) {
-    par.original <- par()
-    par.original <- list(mfrow = par.original$mfrow, mar = par.original$mar)
+    parOrig <- par(no.readonly = TRUE)
+    on.exit(par(parOrig))
     par(mfrow = c(1, 1), mar = c(5, 5, 3, 1))
     
     plot.predict.downscale(output)
-    
-    par(mfrow = par.original$mfrow, mar = par.original$mar)
   }
   
   ### error checking in results

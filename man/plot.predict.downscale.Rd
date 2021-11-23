@@ -1,11 +1,15 @@
 \name{plot.predict.downscale}
+
 \alias{plot.predict.downscale}
+
 \title{Plotting of downscaled occupancy at fine grain sizes}
+
 \usage{
 \method{plot}{predict.downscale}(x, xlim = NULL, ylim = NULL,
      xlab = NULL, ylab = NULL, main = NULL, lwd.obs = NULL, lwd.pred = NULL,
      col.obs = NULL, col.pred = NULL, ...)
 }
+
 \arguments{
 \item{x}{Output object from \code{predict.downscale} and of class 
   \code{predict.downscale}}
@@ -15,12 +19,19 @@
 \item{col.obs, col.pred}{line and point colours of observed (\code{default} = black) and predicted (\code{default} = red) occupancies.}
 \item{\dots}{arguments, including graphical parameters passed to other methods.}
 }
+
+\value{
+No returned value.
+}
+
 \seealso{
 See \code{\link{predict.downscale}} and \code{\link{hui.downscale}} for generating \code{predict.downscale} objects.
 }
+
 \description{
 A simple plotting function of \code{predict.downscale} objects. Occupancy is plotted against grain size (cell area) in log-log space. Observed occupancy at large grain sizes are plotted in black, and occupancies predicted through \code{\link{predict.downscale}} plotted in red.
 }
+
 \examples{
 ## example species data
 data.file <- system.file("extdata", "atlas_data.txt", package = "downscale")
@@ -50,6 +61,7 @@ plot(logis.pred,
      pch = 16,
      ylim = c(0.01, 0.7))
 }
+
 \author{
 Charles Marsh <\email{charliem2003@gmail.com}>.
 }

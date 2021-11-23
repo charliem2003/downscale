@@ -21,19 +21,17 @@ prob_q11 <- function(presences, unit){
   QQ <- matrix(NA, nrow = length(coords))
   for (i in 1:nrow(coords)){ 
     # loop through each of the focal occupied cells calculating the proportion 
-    # of neightbouring cells that are occupied for each one
+    # of neighbouring cells that are occupied for each one
     ## Easting and Northing of occupied focal cell
     E <- coords[i, "x"] 
-    N <- coords[i, "y"] 
+    N <- coords[i, "y"]
+    
     # four adjacent neighbours
-    n1 <- presences[presences$x == (E + unit) & 
-                      presences$y == N, "presence"]
-    n2 <- presences[presences$x == (E - unit) & 
-                      presences$y == N, "presence"]
-    n3 <- presences[presences$x == E & 
-                      presences$y == (N + unit), "presence"]
-    n4 <- presences[presences$x == E & 
-                      presences$y == (N - unit), "presence"]
+    n1 <- presences$presence[presences$x == (E + unit) & presences$y == N]
+    n2 <- presences$presence[presences$x == (E - unit) & presences$y == N]
+    n3 <- presences$presence[presences$x == E & presences$y == (N + unit)]
+    n4 <- presences$presence[presences$x == E & presences$y == (N - unit)]
+    
     # number of neighbours adjacent to each occupied cell (0-4)
     ncells <- length(n1) + length(n2) + length(n3) + length(n4)
     occ <- sum(n1, n2, n3, n4, na.rm = TRUE)

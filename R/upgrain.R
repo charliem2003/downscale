@@ -1,10 +1,11 @@
 ################################################################################
 # 
 # upgrain.R
-# Version 1.6
+# Version 1.7
 # 27/07/2017
 #
 # Updates:
+#   26/10/2021: uses on.exit to return to original par settings
 #   31/07/2017: Bug when using SpatialPointsDataFrame fixed
 #   27/07/2017: SpatialPointsDataFrame allowed as input
 #               'lat' and 'lon' as column names replaced by 'x' and 'y'
@@ -340,8 +341,8 @@ upgrain <- function(atlas.data,
   ### plotting
   if(plot == TRUE) {  
     ### set par values for plotting
-    par.original <- par()
-    par.original <- list(mfrow = par.original$mfrow, mar = par.original$mar)
+    parOrig <- par(no.readonly = TRUE)
+    on.exit(par(parOrig))
     par(mfrow = c(2, ceiling((scales + 2) / 2)), mar = c(3, 3, 3.5, 3))
     
     ########### Plot 1 - original atlas data
@@ -379,9 +380,6 @@ upgrain <- function(atlas.data,
            main = paste("Standardised atlas data:\n cell area = ", 
                         original[i + 1, "Cell.area"], sep = ""))    
     }
-    
-    ### revert par to original values
-    par(mfrow = par.original$mfrow, mar = par.original$mar)
   }
   
   output <- list(threshold = threshold,

@@ -1,10 +1,11 @@
 ################################################################################
 # 
 # Hui.downscale.R
-# Version 1.3
+# Version 1.4
 # 27/07/2017
 #
 # Updates:
+#   26/10/2021: uses on.exit to return to original par settings
 #   27/07/2017: SpatialPointsDataFrame allowed as input
 #               'lat' and 'lon' as column names replaced by 'x' and 'y'
 #   29/09/2016: No need to input cell width in hui.downscale with raster
@@ -149,13 +150,11 @@ hui.downscale <- function(atlas.data,
   class(output) <- "predict.downscale"
   
   if (plot == TRUE) {
-    par.original <- par()
-    par.original <- list(mfrow = par.original$mfrow, mar = par.original$mar)
+    parOrig <- par(no.readonly = TRUE)
+    on.exit(par(parOrig))
     par(mfrow = c(1, 1), mar = c(5, 5, 3, 1))
     
     plot.predict.downscale(output)
-    
-    par(mfrow = par.original$mfrow, mar = par.original$mar)
   }
   return(output)
 }

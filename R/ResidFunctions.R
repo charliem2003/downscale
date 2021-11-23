@@ -12,8 +12,8 @@
 # occupancy used in the optimisation procedure for parameter fitting to coarse
 # scale data.
 #
-# This file contains the 10 functions that are simple geometric extrapolations of
-# the area-occupancy relationship at coarse grain sizes:
+# This file contains the 10 functions that are simple geometric extrapolations
+# of the area-occupancy relationship at coarse grain sizes:
 #   Nachman   Nachman model
 #   PL        Power Law model
 #   Logis     Logistic model

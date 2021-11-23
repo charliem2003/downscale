@@ -26,7 +26,7 @@ OptimiseParametersThomas <- function(area,
                                      tolerance = 1e-6,
                                      model = "Thomas",
                                      starting.params = NULL) {
-  # Retrive residual function, downscaling function and starting parameters
+  # Retrieve residual function, downscaling function and starting parameters
   # for model of choice
   resid.fun <- getFunction(paste("Resid", model, sep = ""))
   pred.fun <- getFunction(paste("Predict", model, sep = ""))  

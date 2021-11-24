@@ -8,8 +8,8 @@ Downscaling Species Occupancy
 \tabular{ll}{
 Package: \tab downscale\cr
 Type: \tab Package\cr
-Version: \tab 4.0-0\cr
-Date: \tab 2021-10-22\cr
+Version: \tab 4.2-0\cr
+Date: \tab 2021-10-24\cr
 License: \tab GPL-2\cr
 }
 }

@@ -1,5 +1,14 @@
 NEWS for downscale package
 
+Changes for 4.2-0
+---------------
+24/11/2021
+Changes for resubmission to CRAN. Amongst other minor changes:
+- vignettes reworked in markdown
+- new refs and a citation added
+- on.exit used for resetting par() in plotting function
+- exportClasses removed from namespace
+
 Changes for 3.0-1
 ---------------
 31/08/2018

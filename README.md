@@ -2,6 +2,9 @@
 
 An R package that provides a set of functions that model the occupancy-area relationship (OAR) of known coarse scale data. The models are then extrapolated to predict the proportion of occupied area at finer grain sizes.
 
+To install the package directly from github (rather than CRAN) run:
+`remotes::install_github("charliem2003/downscale", build_vignettes = TRUE)`
+
 ### Overview
 
 The package provides three sets of functions for each stage of analysis:

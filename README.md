@@ -48,4 +48,4 @@ Groom, Q., Marsh, C.J., Gavish, Y. Kunin, W.E. (2018). How to predict fine resol
 
 Marsh, C.J, Barwell, L.J., Gavish, Y., Kunin, W.E. (2018). downscale: An R package for downscaling species occupancy from coarse-grain data to predict occupancy at fine-grain sizes. *Journal of Statistical Software* 86(Code Snippet 3), 1-20.
 
-Marsh, C.J, Gavish, Y., Kunin, W.E., Brummitt N.A. (2019). Mind the gap: Can downscaling Area of Occupancy overcome sampling gaps when assessing IUCN Red List status?, *Diversity and Distributions* 25, 1832-1845.
+Marsh, C.J, Gavish, Y., Kunin, W.E., Brummitt N.A. (2019). Mind the gap: Can downscaling Area of Occupancy overcome sampling gaps when assessing IUCN Red List status? *Diversity and Distributions* 25, 1832-1845.

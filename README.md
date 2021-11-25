@@ -27,6 +27,12 @@ Two vignettes are available to guide users. Both work through examples in code:
 
 `vignette("Upgraining", package = "downscale")`
 
+Or are available through the github wiki:
+
+[Introduction to downscaling species occupancy](https://github.com/charliem2003/downscale/wiki/Introduction-to-downscaling-species-occupancy)
+
+[Upgraining atlas data for downscaling](https://github.com/charliem2003/downscale/wiki/Upgraining-atlas-data-for-downscaling)
+
 ### Credits
 
 This package was created as part of deliverable D3.2 of WP3 of the project: **EU-BON: Building the European Biodiversity Observation Network} -

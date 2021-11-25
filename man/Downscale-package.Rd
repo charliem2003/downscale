@@ -8,8 +8,8 @@ Downscaling Species Occupancy
 \tabular{ll}{
 Package: \tab downscale\cr
 Type: \tab Package\cr
-Version: \tab 4.2-0\cr
-Date: \tab 2021-10-24\cr
+Version: \tab 4.2-1\cr
+Date: \tab 2021-10-25\cr
 License: \tab GPL-2\cr
 }
 }
@@ -49,8 +49,11 @@ Charles Marsh with input from Louise Barwell and Cang Hui.
 
 Maintainer: Charles Marsh <charliem2003@gmail.com>
 
+Website: https://github.com/charliem2003/downscale
+
 For reporting bugs or requesting information please include \emph{'downscale'} in the subject line.
 }
+
 \references{
 Azaele, S., Cornell, S.J., & Kunin, W.E. (2012). Downscaling species occupancy from coarse spatial scales. \emph{Ecological Applications} 22, 1004-1014.
 

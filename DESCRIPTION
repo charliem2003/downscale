@@ -1,10 +1,11 @@
 Package: downscale
 Type: Package
 Title: Downscaling Species Occupancy
-Version: 4.2-0
-Date: 2021-11-24
-Author: Charles Marsh [aut, cre]
+Version: 4.2-1
+Date: 2021-11-25
+Author: person("Charles", "Marsh", role = c("aut", "cre"), comment = c(ORCID="0000-0002-0281-3115")),
 Maintainer: Charles Marsh <charliem2003@gmail.com>
+URL: https://github.com/charliem2003/downscale
 Description: Uses species occupancy at coarse grain sizes to predict species occupancy at fine grain sizes. Ten models are provided to fit and extrapolate the occupancy-area relationship, as well as methods for preparing atlas data for modelling. See Marsh et. al. (2018) <doi:10.18637/jss.v086.c03>.
 License: GPL-2
 Depends:

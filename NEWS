@@ -1,5 +1,9 @@
 NEWS for downscale package
 
+Changes for 4.3-0
+---------------
+SWITCHING TO terra + sf FROM raster + sp
+
 Changes for 4.2-1
 ---------------
 24/11/2021

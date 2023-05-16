@@ -97,7 +97,7 @@ downscale <- function(occupancies,
   
   if(model == "Logis") { 
     optim.pars <- suppressWarnings(
-      OptimisePasLogis(area = input.data$Cell.area[!is.na(input.data$Occ)], 
+      OptimiseParsLogis(area = input.data$Cell.area[!is.na(input.data$Occ)], 
                        observed = input.data$Occ[!is.na(input.data$Occ)],
                        model = model,
                        starting.params = starting_params))

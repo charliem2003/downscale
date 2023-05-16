@@ -37,7 +37,7 @@ hui.downscale <- function(atlas.data,
                           plot = FALSE) {
   
   ### error checking: if data frame requires extent
-  if(is.data.frame(atlas.data) == "TRUE") {
+  if(is.data.frame(atlas.data)) {
     if(is.null(extent)) {
       stop("Extent required if data input is data frame of coordinates")
     }
@@ -51,7 +51,7 @@ hui.downscale <- function(atlas.data,
   }
   
   ### Error checking: if data frame needs cell width
-  if(is.data.frame(atlas.data) == "TRUE") {
+  if(is.data.frame(atlas.data)) {
     if(is.null(cell.width)) {
       stop("If data is data.frame cell.width is required")
     }
@@ -70,8 +70,8 @@ hui.downscale <- function(atlas.data,
     extent <- atlas.data$extent.stand
     species <- raster::rasterToPoints(atlas.data$atlas.raster.stand)
     species <- data.frame(presence = species[, 3],
-                          x = species[, "y"],
-                          y = species[, "x"])
+                          x = species[, "x"],
+                          y = species[, "y"])
     cell.width <- raster::res(atlas.data$atlas.raster.stand)[1]
     cell.area <- cell.width ^ 2
   }
@@ -79,27 +79,27 @@ hui.downscale <- function(atlas.data,
   if(class(atlas.data) == "RasterLayer") {
     species <- raster::rasterToPoints(atlas.data)
     species <- data.frame(presence = species[, 3],
-                          x = species[, "y"],
-                          y = species[, "x"])
+                          x = species[, "x"],
+                          y = species[, "y"])
     cell.width <- raster::res(atlas.data)[1]
     cell.area <- cell.width ^ 2
   }
   
   if(class(atlas.data) == "SpatialPointsDataFrame") {
     species <- data.frame(presence = atlas.data@data[, "presence"],
-                          x = atlas.data@coords[, "y"],
-                          y = atlas.data@coords[, "x"])
+                          x = species[, "x"],
+                          y = species[, "y"])
     cell.area <- cell.width ^ 2
   }
   
-  if(is.data.frame(atlas.data) == "TRUE") {
+  if(is.data.frame(atlas.data)) {
     species <- atlas.data
     cell.area <- cell.width ^ 2
   }
   
   ##############################################################################
   ### error checking that it's presence-absence data
-  if(sum(species[, "presence"] > 1, na.rm = TRUE) > 0) {
+  if(sum(species$presence > 1, na.rm = TRUE) > 0) {
     stop("Presence-absence data not in 1's and 0's")
   }
   
@@ -113,8 +113,8 @@ hui.downscale <- function(atlas.data,
   ### Hui modelling
   
   # p+ : observed probability of occurrence at coarse grain
-  p1_coarse <- sum(species[, "presence"] == 1, na.rm = TRUE) / 
-    sum(!is.na(species[, "presence"]))
+  p1_coarse <- sum(species$presence == 1, na.rm = TRUE) /
+    sum(!is.na(species$presence))
   
   # p- : observed probability of absence at coarse grain
   p0_coarse <- 1 - p1_coarse  
@@ -128,27 +128,33 @@ hui.downscale <- function(atlas.data,
   q00 <- (1 - (2 * p1_coarse) + (q11 * p1_coarse)) / (1 - p1_coarse)
   
   # solve for p0_fine - probability of absence at fine scale
-  predicted <- data.frame("Cell.area" = new.areas, "Occupancy" = NA, "AOO" = NA)
+  predicted <- data.frame(Cell.area = new.areas,
+                          Occupancy = NA,
+                          AOO       = NA)
+  
   for(i in 1:length(new.areas)) {
     fine.width <- sqrt(new.areas[i])
-    p0_fine_root <- uniroot(f = ResidHui,
-                       n = cell.width / fine.width,
-                       q00 = q00,
-                       p0_coarse = p0_coarse,
-                       lower= 1e-12,
-                       upper = 1,
-                       tol = tolerance,
-                       extendInt = "yes")
-    predicted[i, "Occupancy"] <- 1 - p0_fine_root$root
+    p0_fine_root <- uniroot(f         = ResidHui,
+                            n         = cell.width / fine.width,
+                            q00       = q00,
+                            p0_coarse = p0_coarse,
+                            lower     = 1e-12,
+                            upper     = 1,
+                            tol       = tolerance,
+                            extendInt = "yes")
+    predicted$Occupancy[i] <- 1 - p0_fine_root$root
   }
-  predicted[, "AOO"] <- predicted[, "Occupancy"] * extent
-  observed <- data.frame("Cell.area" = cell.width ^ 2,
-                         "Occupancy" = p1_coarse)
-  output <- list("model" = "Hui",
-                 "predicted" = predicted,
-                 "observed" = observed)
+  
+  ### output object
+  predicted$AOO <- predicted$Occupancy * extent
+  observed <- data.frame(Cell.area = cell.width ^ 2,
+                         Occupancy = p1_coarse)
+  output <- list(model     = "Hui",
+                 predicted = predicted,
+                 observed  = observed)
   class(output) <- "predict.downscale"
   
+  ### optional plotting
   if (plot == TRUE) {
     parOrig <- par(no.readonly = TRUE)
     on.exit(par(parOrig))

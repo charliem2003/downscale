@@ -3,6 +3,8 @@ NEWS for downscale package
 Changes for 4.3-0
 ---------------
 SWITCHING TO terra + sf FROM raster + sp
+- Simple reformatting
+- optimisation functions renamed to optimisePars**
 
 Changes for 4.2-1
 ---------------

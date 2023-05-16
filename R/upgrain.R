@@ -1,10 +1,11 @@
 ################################################################################
 # 
 # upgrain.R
-# Version 1.7
-# 27/07/2017
+# Version 1.8
+# 16/05/2023
 #
 # Updates:
+#   16/05/2023: Simple reformatting
 #   26/10/2021: uses on.exit to return to original par settings
 #   31/07/2017: Bug when using SpatialPointsDataFrame fixed
 #   27/07/2017: SpatialPointsDataFrame allowed as input
@@ -87,17 +88,18 @@ upgrain <- function(atlas.data,
   
   if(is.null(threshold)) {
     ### Error checking: only one method is selected
-    if(sum(method == c("Sampled_Only",
-                       "All_Sampled",
-                       "All_Occurrences",
-                       "Gain_Equals_Loss")) > 1){
+    if(sum(method %in% c("Sampled_Only",
+                         "All_Sampled",
+                         "All_Occurrences",
+                         "Gain_Equals_Loss")) > 1) {
       stop("Method is not one of the options")
     }
+    
     ### Error checking: method is one of the selections
-    if(sum(method == c("Sampled_Only",
+    if(!method %in% c("Sampled_Only",
                        "All_Sampled",
                        "All_Occurrences",
-                       "Gain_Equals_Loss")) == 0){
+                       "Gain_Equals_Loss")) {
       stop("Method is not one of the options")
     }
   }
@@ -108,7 +110,7 @@ upgrain <- function(atlas.data,
   }
   
   ### Error checking: if data frame needs cell width
-  if(is.data.frame(atlas.data) == "TRUE") {
+  if(is.data.frame(atlas.data)) {
     if(is.null(cell.width)) {
       stop("If data is data.frame cell.width is required")
     }
@@ -123,15 +125,15 @@ upgrain <- function(atlas.data,
   
   ################################################################################
   ### data storage
-  original <- data.frame("Cell.area" = rep(NA, scales + 1), 
-                         "Extent"  = rep(NA, scales + 1),
-                         "Occupancy" = rep(NA, scales + 1))
-  extended <- data.frame("Cell.area" = rep(NA, scales + 1), 
-                         "Extent"  = rep(NA, scales + 1),
-                         "Occupancy" = rep(NA, scales + 1))
+  original <- data.frame(Cell.area = rep(NA, scales + 1), 
+                         Extent    = rep(NA, scales + 1),
+                         Occupancy = rep(NA, scales + 1))
+  extended <- data.frame(Cell.area = rep(NA, scales + 1), 
+                         Extent    = rep(NA, scales + 1),
+                         Occupancy = rep(NA, scales + 1))
   
   ### data manipulation
-  if(is.data.frame(atlas.data) == "TRUE") {
+  if(is.data.frame(atlas.data)) {
     ### error checking: format of data frame
     if(ncol(atlas.data) != 3) {
       stop("Input data frame must contain three columns named 'x', 
@@ -144,9 +146,9 @@ upgrain <- function(atlas.data,
             'y', and 'presence' in that order")
     }
     
-    longitude <- atlas.data[, "x"]
-    latitude <- atlas.data[, "y"]
-    presence <- atlas.data[, "presence"]
+    longitude <- atlas.data$x
+    latitude  <- atlas.data$y
+    presence  <- atlas.data$presence
     presence[presence > 0] <- 1
     shapefile <- sp::SpatialPointsDataFrame(coords = data.frame(x = 
                                                                   longitude,
@@ -230,11 +232,11 @@ upgrain <- function(atlas.data,
     thresholds <- seq(0, 1, 0.01)
     
     ### Loop through thresholds
-    land <- data.frame(Threshold = thresholds, 
-                       SampledExcluded = rep(NA, length(thresholds)),
-                       SampledIncluded = NA,
-                       UnsampledAdded = NA, 
-                       Extent = NA,
+    land <- data.frame(Threshold           = thresholds, 
+                       SampledExcluded     = rep(NA, length(thresholds)),
+                       SampledIncluded     = NA,
+                       UnsampledAdded      = NA, 
+                       Extent              = NA,
                        OccurrencesExcluded = NA)
     
     atlas_boundary <- atlas_raster_extend
@@ -382,10 +384,10 @@ upgrain <- function(atlas.data,
     }
   }
   
-  output <- list(threshold = threshold,
-                 extent.stand = extended[1, "Extent"],
-                 occupancy.stand = extended,
-                 occupancy.orig = original,
+  output <- list(threshold          = threshold,
+                 extent.stand       = extended[1, "Extent"],
+                 occupancy.stand    = extended,
+                 occupancy.orig     = original,
                  atlas.raster.stand = atlas_thresh)
   if(return.rasters == TRUE) {
     scaled.rasters <- list()
@@ -393,12 +395,12 @@ upgrain <- function(atlas.data,
       scaled.rasters[i] <- get(paste("scaled_raster", i, sep = "_"))
     }
     names(scaled.rasters) <- paste("scaled.raster", extended[-1, "Cell.area"], sep = "")
-    output <- list(threshold = threshold,
-                   extent.stand = extended[1, "Extent"],
-                   occupancy.stand = extended,
-                   occupancy.orig = original,
+    output <- list(threshold          = threshold,
+                   extent.stand       = extended[1, "Extent"],
+                   occupancy.stand    = extended,
+                   occupancy.orig     = original,
                    atlas.raster.stand = atlas_thresh,
-                   scaled.rasters = scaled.rasters)
+                   scaled.rasters     = scaled.rasters)
   }
   class(output) <- "upgrain"
   return(output)

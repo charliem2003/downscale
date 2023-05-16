@@ -1,10 +1,11 @@
 ################################################################################
 #
 # upgrain.threshold.R 
-# Version 1.3
-# 27/07/2017
+# Version 1.4
+# 16/05/2023
 #
-# Updates:# Updates:
+# Updates:
+#   16/05/2023: Simple reformatting
 #   15/11/2021: plotting option added;
 #               bugfix when boundary_poly is null
 #   26/10/2021: uses on.exit to return to original par settings
@@ -30,12 +31,12 @@
 #                presence-absence; or a SpatialPointsDataFrame with a data 
 #                frame containing 'presence'
 #   cell.width = if data is a data frame, the cell widths of sampled cells.
-#   scales = the number of cells to upgrain. Upgraining will happen by factors 
-#            of 2 - ie if scales = 3, the atlas data will be aggregated in 2x2 
-#            cells, 4x4 cells and 8x8 cells.
+#   scales     = the number of cells to upgrain. Upgraining will happen by
+#                factors of 2 - ie if scales = 3, the atlas data will be
+#                aggregated in 2 x 2 cells, 4 x 4 cells and 8 x 8 cells.
 #   thresholds = a vector of thresholds between and including 0 and 1 for the
 #                quantity of Unsampled NoData cells that can be included.
-#   plot = See outputs section for plot details. Default = TRUE.
+#   plot       = See outputs section for plot details. Default = TRUE.
 #
 # outputs:
 #   Two plotting windows. One with four plots relevant to exploring the 
@@ -61,7 +62,7 @@ upgrain.threshold <- function(atlas.data,
   }
   
   ### Error checking: if data frame needs cell width
-  if(is.data.frame(atlas.data) == "TRUE") {
+  if(is.data.frame(atlas.data)) {
     if(is.null(cell.width)) {
       stop("If data is data.frame cell.width is required")
     }
@@ -75,22 +76,21 @@ upgrain.threshold <- function(atlas.data,
   }
   
   ### data manipulation
-  if(is.data.frame(atlas.data) == "TRUE") {
+  if(is.data.frame(atlas.data)) {
     ### error checking: format of data frame
     if(ncol(atlas.data) != 3) {
       stop("Input data frame must contain three columns named 'x', 
             'y', and 'presence' in that order")
     }
     ### error checking: column names
-    if(sum(names(atlas.data) != c("x", "y", "presence")) > 0) 
-    {
+    if(sum(names(atlas.data) != c("x", "y", "presence")) > 0) {
       stop("Input data frame must contain three columns named 'x', 
             'y', and 'presence' in that order")
     }
     
-    longitude <- atlas.data[, "x"]
-    latitude <- atlas.data[, "y"]
-    presence <- atlas.data[, "presence"]
+    longitude <- atlas.data$x
+    latitude  <- atlas.data$y
+    presence  <- atlas.data$presence
     presence[presence > 0] <- 1
     shapefile <- sp::SpatialPointsDataFrame(coords = data.frame(x = longitude,
                                                                 y =  latitude),

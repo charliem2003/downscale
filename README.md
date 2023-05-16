@@ -35,8 +35,7 @@ Or are available through the github wiki:
 
 ### Credits
 
-This package was created as part of deliverable D3.2 of WP3 of the project: **EU-BON: Building the European Biodiversity Observation Network} -
-a 7th Framework Programme funded by the European Union under Contract No. 308454.**
+This package was created as part of deliverable D3.2 of WP3 of the project: **EU-BON: Building the European Biodiversity Observation Network} - a 7th Framework Programme funded by the European Union under Contract No. 308454.**
 
 Author: Charles Marsh with input from Louise Barwell and Cang Hui.
 Maintainer: Charles Marsh <charliem2003@gmail.com>

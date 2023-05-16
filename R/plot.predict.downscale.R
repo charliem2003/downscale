@@ -1,18 +1,19 @@
 ################################################################################
 # 
 # plot.predict.downscale.R
-# Version 1.1
-# 13/02/2015
+# Version 1.2
+# 16/05/2023
 #
 # Updates:
+#   16/05/2023: Simple reformatting
 #   13/03/2015: if 0's predicted don't plot them
 #
 # Plot the observed and predicted area of occupancy against grain size on
 # log-log axes.
 #
 # Args:
-#   predict.object: an object of class 'predict.downscale' containing observed
-#                   and predicted data 
+#   x:   an object of class 'predict.downscale' containing observed
+#        and predicted data 
 #   ...: arguments, including graphical parameters, passed to other methods.
 #
 # Returns:
@@ -32,8 +33,9 @@ plot.predict.downscale <- function(x,
                                    col.pred = NULL,
                                    ...) {
   predict.object <- x
-  # error checking
-  if (class(predict.object) != "predict.downscale"){
+  
+  ### error checking
+  if (class(predict.object) != "predict.downscale") {
     stop("Input data not of class 'predict.downscale'")
   }
   
@@ -44,14 +46,11 @@ plot.predict.downscale <- function(x,
 
   ### plotting pars
   if(is.null(xlim)) {
-    xlim <- c(min(c(observed[, "Cell.area"], 
-                    predicted[, "Cell.area"]), na.rm = TRUE),
-              max(c(observed[, "Cell.area"], 
-                    predicted[, "Cell.area"]), na.rm = TRUE))
+    xlim <- c(min(c(observed$Cell.area, predicted$Cell.area), na.rm = TRUE),
+              max(c(observed$Cell.area, predicted$Cell.area), na.rm = TRUE))
   }
   if(is.null(ylim)) {
-    ylim <- c(min(c(observed[, "Occupancy"], 
-                    predicted[, "Occupancy"]), na.rm = TRUE), 1)
+    ylim <- c(min(c(observed$Occupancy, predicted$Occupancy), na.rm = TRUE), 1)
   }
   if(is.null(xlab)) {
     xlab <- "Log cell area"
@@ -75,9 +74,9 @@ plot.predict.downscale <- function(x,
     lwd.pred <- 2
   }
 
-  plot(observed[, "Occupancy"] ~ observed[, "Cell.area"],
+  plot(observed$Occupancy ~ observed$Cell.area,
        type = "n",
-       log = "xy",
+       log  = "xy",
        xlim = xlim,
        ylim = ylim,
        xlab = xlab,
@@ -85,15 +84,15 @@ plot.predict.downscale <- function(x,
        main = main,
        ...)
   
-  points(observed[, "Occupancy"] ~ observed[, "Cell.area"],
+  points(observed$Occupancy ~ observed$Cell.area,
          type = "b",
-         col = col.obs,
-         lwd = lwd.obs,
+         col  = col.obs,
+         lwd  = lwd.obs,
          ...)
   
-  points(predicted[, "Occupancy"] ~ predicted[, "Cell.area"],
+  points(predicted$Occupancy ~ predicted$Cell.area,
          type = "b",
-         col = col.pred,
-         lwd = lwd.pred,
+         col  = col.pred,
+         lwd  = lwd.pred,
          ...)
 }

@@ -408,12 +408,12 @@ We’ll get the UK records for the chalkhill blue (*Polyommatus coridon*), a but
 ```{r eval = FALSE}
 ### NOT RUN in this tutorial
 ### Run this code to download the data yourself (results will slightly differ)
-records <- occ_search(scientificName = "Polyommatus coridon",
-                      country        = "GB",
-                      limit          = 10000,
-                      hasCoordinate  = TRUE,
-                      fields         = "minimal")
-records <- records$data
+# records <- occ_search(scientificName = "Polyommatus coridon",
+#                       country        = "GB",
+#                       limit          = 10000,
+#                       hasCoordinate  = TRUE,
+#                       fields         = "minimal")
+# records <- records$data
 ```
 
 In this tutorial we will instead load a copy of the data already available in this package.

@@ -1,10 +1,11 @@
 ################################################################################
 # 
 # ensemble.downscale.R
-# Version 1.3
-# 13/03/2015
+# Version 1.4
+# 16/05/2023
 #
 # Updates:
+#   16/05/2023: Simple reformatting
 #   26/10/2021: uses on.exit to return to original par settings
 #   24/11/2016: Bug fixed with apply in error checking
 #   13/03/2015: if 0's predicted don't plot them
@@ -64,11 +65,9 @@ ensemble.downscale <- function(occupancies,
     }
   }
   
-  for(m in 1:length(models)) {
-    if(models[m] %in% c("Nachman", "PL", "Logis", "Poisson", "NB", "GNB", 
-                        "INB", "FNB", "Thomas", "Hui", "all") == FALSE) {
-      stop("Model name invalid", call. = FALSE)
-    }
+  if(any(!models %in% c("Nachman", "PL", "Logis", "Poisson", "NB", "GNB", 
+                        "INB", "FNB", "Thomas", "Hui", "all"))) {
+    stop("Model name invalid", call. = FALSE)
   }
   
   ## error checking - if not an upgrain object
@@ -80,7 +79,8 @@ ensemble.downscale <- function(occupancies,
     
     # error checking - extent larger than largest grain size
     if(extent < max(occupancies[, 2])) {
-      stop("Total extent is smaller than the largest grain size! Are the units correct?")
+      stop("Total extent is smaller than the largest grain size! 
+           Are the units correct?")
     }
     
     # error checking - for hui model occupancies is upgrain object
@@ -89,7 +89,7 @@ ensemble.downscale <- function(occupancies,
        stop("Hui model can not be run if occupancies is not of class 'upgrain'")
       }
     }
-    if(sum(models == "Hui") > 0) {
+    if(any(models == "Hui")) {
       stop("Hui model can not be run if occupancies is not of class 'upgrain'")
     }
   }
@@ -100,7 +100,7 @@ ensemble.downscale <- function(occupancies,
   }
   
   # error checking - if model = Hui then cell.width must be present
-  if(sum(models == "Hui") > 0) {
+  if(any(models == "Hui")) {
     if(is.null(cell.width)) {
       stop("Cell.width must be specified for the Hui model")
     }
@@ -121,45 +121,52 @@ ensemble.downscale <- function(occupancies,
                                         ncol = (length(model.list) + 1),
                                         nrow = length(new.areas)))
   colnames(all.predicted) <- c("Cell.area", model.list)
-  all.predicted[, "Cell.area"] <- new.areas
+  all.predicted$Cell.area <- new.areas
   
   # modelling
   for (i in 1:length(model.list)) {
-    model.run<-model.list[i]
+    model.run <- model.list[i]
     
     ## see if there are user-inputted starting parameters
-    if(sum(starting_params_mods == model.run) == 1) {
-      starting_params <- starting_params_opts[[model.run]]
+    if(!is.null(starting_params_mods)) {
+      if(any(starting_params_mods == model.run)) {
+        starting_params_mod <- starting_params_opts[[model.run]]
+      } else {
+        starting_params_mod <- NULL
+      }
     } else {
-      starting_params <- NULL
+      starting_params_mod <- NULL
     }
     
     if(verbose == TRUE){
       cat(paste(model.run, "model is running..."))
     }
     
+    ### For the Hui model
     if(model.run != "Hui") {
-      mod <- downscale(occupancies = occupancies,
-                       model = model.run,
-                       extent = extent,
-                       tolerance = tolerance_mod,
-                       starting_params = starting_params)
-      est <- predict.downscale(object = mod,
-                     new.areas = new.areas,
-                     extent = extent,
-                     tolerance = tolerance_pred,
-                     plot = FALSE)
+      mod <- downscale(occupancies     = occupancies,
+                       model           = model.run,
+                       extent          = extent,
+                       tolerance       = tolerance_mod,
+                       starting_params = starting_params_mod)
+      
+      est <- predict.downscale(object    = mod,
+                               new.areas = new.areas,
+                               extent    = extent,
+                               tolerance = tolerance_pred,
+                               plot      = FALSE)
       all.predicted[, i + 1] <- est$predicted[, "Occupancy"]
     }
+    
+    ### All other models
     if(model.run == "Hui") {
       new.areas.hui <- new.areas[new.areas < (cell.width ^ 2)]
       est <- hui.downscale(atlas.data = occupancies, 
                            cell.width = cell.width, 
-                           new.areas = new.areas.hui, 
-                           extent = extent,
-                           tolerance = tolerance_hui)
-      all.predicted[1:length(new.areas.hui), 
-                    i + 1] <- est$predicted[, "Occupancy"]
+                           new.areas  = new.areas.hui, 
+                           extent     = extent,
+                           tolerance  = tolerance_hui)
+      all.predicted[1:length(new.areas.hui), i+1] <- est$predicted[,"Occupancy"]
     }
     
     if(verbose == TRUE){
@@ -171,7 +178,7 @@ ensemble.downscale <- function(occupancies,
   aoo.predicted[, -1] <- aoo.predicted[, -1] * extent
   
   
-  # plotting
+  ### optional plotting
   if (plot == TRUE) {
     parOrig <- par(no.readonly = TRUE)
     on.exit(par(parOrig))
@@ -180,12 +187,12 @@ ensemble.downscale <- function(occupancies,
     for (i in 1:length(model.list)) {
       predicted <- all.predicted
       predicted[predicted == 0] <- NA
-      plot(predicted[, 2] ~ all.predicted[, "Cell.area"],
+      plot(predicted[, 2] ~ all.predicted$Cell.area,
            type = "n",
-           log = "xy",
-           xlim = c(min(c(all.predicted[, "Cell.area"],
+           log  = "xy",
+           xlim = c(min(c(all.predicted$Cell.area,
                           est$observed[, "Cell.area"]), na.rm = TRUE),
-                    max(c(all.predicted[, "Cell.area"],
+                    max(c(all.predicted$Cell.area,
                           est$observed[, "Cell.area"]), na.rm = TRUE)),
            ylim = c(min(predicted[, -1], na.rm = TRUE), 1),
            xlab = "Log cell area",
@@ -195,16 +202,18 @@ ensemble.downscale <- function(occupancies,
       points(est$observed[, "Occupancy"] ~ est$observed[, "Cell.area"],
              type="b",
              lwd=2)
-      points(predicted[, "Means"] ~ all.predicted[, "Cell.area"],
+      points(predicted$Means ~ all.predicted$Cell.area,
              type="b",
              lwd=2,
              col = "dark grey")
-      points(predicted[, i + 1] ~ all.predicted[, "Cell.area"],
+      points(predicted[, i + 1] ~ all.predicted$Cell.area,
              type="b",
              lwd=2,
              col = "red")
     }
   }
+  
+  ### Output
   output <- list(Occupancy = all.predicted,
                  AOO = aoo.predicted)
   return(output)

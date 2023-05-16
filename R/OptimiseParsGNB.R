@@ -1,31 +1,30 @@
 ################################################################################
 # 
-# OptimiseParametersFNB.R
+# OptimiseParsGNB.R
 # Version 1.1
-# 18/08/2016
+# 16/05/2023
 #
 # Updates:
-#   18/08/2016: names of starting parameters harmonised with paper
+#   16/05/2023: Renamed
 #
 # Optimisation procedure of finding parameters that best fit observed data for
-# the Finite Negative Binomial model
+# the generalised binomial model
 #
 # Args:
-#   Area: Vector of grain sizes for obsvered area of occupancies
+#   Area: Vector of grain sizes for observed area of occupancies
 #   Observed: Vector of observed area of occupancies
-#   extent: Extent of study area (km2)
-#   model = "FNB"
+#   model = "GNB"
 #
 # Returns:
 #   optim.pars: list of parameters estimated from optimisation procedure
 #
 ################################################################################
 
-OptimiseParametersFNB <- function(area,
-                                  observed,
-                                  extent,
-                                  model = "FNB",
-                                  starting.params = NULL) {
+OptimiseParsGNB <- function(area, 
+                            observed,
+                            model = "GNB",
+                            starting.params = NULL) {
+  
   # Retrieve residual function, downscaling function and starting parameters
   # for model of choice
   resid.fun <- getFunction(paste("Resid", model, sep = ""))
@@ -41,12 +40,9 @@ OptimiseParametersFNB <- function(area,
   optimisation <- minpack.lm::nls.lm(par = starting.pars,
                                      fn = resid.fun,
                                      area = area,
-                                     extent = extent,
                                      observed = log(observed),
-                                     lower = c("N" = -Inf, "k" = 0),
-                                     upper = c("N" = Inf, 
-                                               "k" = min(area, na.rm = TRUE) * 
-                                                 100),
+                                     lower = c("C" = 0, "z" = -Inf, "k" = -Inf),
+                                     upper = c("C" = Inf, "z" = Inf,"k" = Inf),
                                      control = minpack.lm::nls.lm.control(
                                        maxiter = 1000))
   optim.pars <- as.list(coef(optimisation))

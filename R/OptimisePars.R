@@ -1,13 +1,16 @@
 ################################################################################
 # 
-# OptimiseParameters.R
-# Version 1.0
-# 28/01/2015
+# OptimisePas.R
+# Version 1.1
+# 16/05/2023
+#
+# Updates:
+#   16/05/2023: Renamed
 #
 # Optimisation procedure of finding parameters that best fit observed data
 #
 # Args:
-#   Area: Vector of grain sizes for obsvered area of occupancies
+#   Area: Vector of grain sizes for observed area of occupancies
 #   Observed: Vector of observed area of occupancies
 #   Model: which downscaling model to use. Choice of:
 #     Nachman   Nachman model
@@ -22,7 +25,11 @@
 #
 ################################################################################
 
-OptimiseParameters <- function(area, observed, model, starting.params = NULL) {
+OptimisePars <- function(area,
+                         observed,
+                         model,
+                         starting.params = NULL) {
+  
   # Retrieve residual function, downscaling function and starting parameters
   # for model of choice
   resid.fun <- getFunction(paste("Resid", model, sep = ""))

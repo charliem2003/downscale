@@ -2,9 +2,10 @@
 # 
 # downscale.R
 # Version 1.4
-# 08/05/2015
+# 16/05/2023
 #
 # Updates:
+#   16/05/2023: renaming of optimisePars functions. Simple reformatting
 #   22/11/2021: basic reformatting
 #   08/05/2015: extent now required
 #   03/02/2015: output defined as class 'downscale'
@@ -57,7 +58,8 @@ downscale <- function(occupancies,
     
     # error checking - extent larger than largest grain size
     if(extent < max(occupancies[, 2])) {
-      stop("Total extent is smaller than the largest grain size! Are the units correct?")
+      stop("Total extent is smaller than the largest grain size! 
+           Are the units correct?")
     }
     
     # error checking - occupancies are between 0 and 1
@@ -72,65 +74,65 @@ downscale <- function(occupancies,
   }
   
   # error checking - model name is correct
-  if (model %in% c("Nachman", "PL", "Logis", "Poisson", "NB", "GNB", "INB",
-                   "FNB", "Thomas") == FALSE) {
+  if (!model %in% c("Nachman", "PL", "Logis", "Poisson", "NB", "GNB", "INB",
+                    "FNB", "Thomas")) {
     stop("Model name invalid", call. = FALSE)
   }
   
   input.data <- DataInput(occupancy = occupancies[, 2],
-                          area = occupancies[, 1],
-                          extent = extent)
+                          area      = occupancies[, 1],
+                          extent    = extent)
   model <- model
   if(is.null(starting_params)) {
     starting_params <- NULL
   }
   
-  if((model == "Nachman") | (model == "PL") | (model == "Logis") | 
-     (model == "Poisson") | (model == "NB") | (model == "GNB") | 
-     (model == "INB")) {
+  if(model %in% c("Nachman", "PL", "Logis", "Poisson", "NB", "INB")) {
     optim.pars <- suppressWarnings(
-      OptimiseParameters(area = input.data$Cell.area[!is.na(input.data$Occ)],
-                         observed = input.data$Occ[!is.na(input.data$Occ)],
-                         model = model,
-                         starting.params = starting_params))
+      OptimisePars(area = input.data$Cell.area[!is.na(input.data$Occ)],
+                   observed = input.data$Occ[!is.na(input.data$Occ)],
+                   model = model,
+                   starting.params = starting_params))
   }
   
   if(model == "Logis") { 
     optim.pars <- suppressWarnings(
-      OptimiseParametersLogis(area = input.data$Cell.area[!is.na(input.data$Occ)], 
-                              observed = input.data$Occ[!is.na(input.data$Occ)],
-                              model = model,
-                              starting.params = starting_params))
+      OptimisePasLogis(area = input.data$Cell.area[!is.na(input.data$Occ)], 
+                       observed = input.data$Occ[!is.na(input.data$Occ)],
+                       model = model,
+                       starting.params = starting_params))
   }
   
   if(model == "GNB") { 
     optim.pars <- suppressWarnings(
-      OptimiseParametersGNB(area = input.data$Cell.area[!is.na(input.data$Occ)], 
-                            observed = input.data$Occ[!is.na(input.data$Occ)],
-                            model = model,
-                            starting.params = starting_params))
+      OptimiseParsGNB(area = input.data$Cell.area[!is.na(input.data$Occ)], 
+                      observed = input.data$Occ[!is.na(input.data$Occ)],
+                      model = model,
+                      starting.params = starting_params))
   }
   
   if (model == "FNB") { 
     optim.pars <- suppressWarnings(
-      OptimiseParametersFNB(area = input.data$Cell.area[!is.na(input.data$Occ)], 
-                            observed = input.data$Occ[!is.na(input.data$Occ)],
-                            extent = extent,
-                            model = model,
-                            starting.params = starting_params))
+      OptimiseParsFNB(area = input.data$Cell.area[!is.na(input.data$Occ)], 
+                      observed = input.data$Occ[!is.na(input.data$Occ)],
+                      extent = extent,
+                      model = model,
+                      starting.params = starting_params))
   }
   
   if (model == "Thomas") { 
     optim.pars <- suppressWarnings(
-      OptimiseParametersThomas(area = input.data$Cell.area[!is.na(input.data$Occ)], 
-                               observed = input.data$Occ[!is.na(input.data$Occ)],
-                               extent = extent,
-                               model = model,
-                               tolerance = tolerance,
-                               starting.params = starting_params))
+      OptimiseParsThomas(area = input.data$Cell.area[!is.na(input.data$Occ)], 
+                         observed = input.data$Occ[!is.na(input.data$Occ)],
+                         extent = extent,
+                         model = model,
+                         tolerance = tolerance,
+                         starting.params = starting_params))
   }
-  observed <- data.frame("Cell.area" = input.data[,"Cell.area"],
-                         "Occupancy" = input.data[,"Occ"])
+  
+  ### output
+  observed <- data.frame(Cell.area = input.data$Cell.area,
+                         Occupancy = input.data$Occ)
   output <- list("model"    = model,
                  "pars"     = unlist(optim.pars),
                  "observed" = observed,

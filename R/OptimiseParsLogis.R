@@ -1,32 +1,31 @@
 ################################################################################
 # 
-# OptimiseParametersThomas.R
-# Version 1.0
-# 30/01/2015
+# OptimiseParametersLogis.R
+# Version 1.1
+# 16/05/2023
+#
+# Updates:
+#   16/05/2023: Renamed
 #
 # Optimisation procedure of finding parameters that best fit observed data for
-# the Thomas model
+# the Logistic model
 #
 # Args:
-#   Area: Vector of grain sizes for obsvered area of occupancies
+#   Area: Vector of grain sizes for observed area of occupancies
 #   Observed: Vector of observed area of occupancies
-#   extent: Extent of study area (km2)
-#   tolerance: tolerance for integration. Lower numbers allow for greater
-#              accuracy but require longer processing times
-#   model = "Thomas"
+#   model = "Logis"
 #
 # Returns:
 #   optim.pars: list of parameters estimated from optimisation procedure
 #
 ################################################################################
 
-OptimiseParametersThomas <- function(area, 
-                                     observed, 
-                                     extent, 
-                                     tolerance = 1e-6,
-                                     model = "Thomas",
-                                     starting.params = NULL) {
-  # Retrieve residual function, downscaling function and starting parameters
+OptimiseParsLogis <- function(area, 
+                               observed,
+                               model = "Logis",
+                               starting.params = NULL) {
+  
+  # Retrive residual function, downscaling function and starting parameters
   # for model of choice
   resid.fun <- getFunction(paste("Resid", model, sep = ""))
   pred.fun <- getFunction(paste("Predict", model, sep = ""))  
@@ -40,10 +39,10 @@ OptimiseParametersThomas <- function(area,
   # Optimisation procedure
   optimisation <- minpack.lm::nls.lm(par = starting.pars,
                                      fn = resid.fun,
-                                     tolerance = tolerance,
                                      area = area,
-                                     extent = extent,
                                      observed = log(observed),
+                                     lower = c("C" = 0, "z" = -Inf),
+                                     upper = c("C" = Inf, "z" = Inf),
                                      control = minpack.lm::nls.lm.control(
                                        maxiter = 1000))
   optim.pars <- as.list(coef(optimisation))

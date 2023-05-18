@@ -53,13 +53,14 @@ knitr::include_graphics("figures/Saturation.png")
 
 The general flow of the `downscale` package is presented in fig. \@ref(fig:Flow). The package is based around seven user functions:  `upgrain.threshold`, `upgrain`, `downscale`, `predict`, `hui.downscale`, `plot` and `ensemble.downscale`. Ten downscaling models are available (Nachman, power law, logistic, poisson, negative binomial, generalised negative binomial, improved negative binomial, finite negative binomial, Thomas and Hui models). Details of all models can be found in the help files, and in the supplementary information of Barwell et al. 2014. 
 
-The user may input three types of data:
+The user may input four types of data:
 
 1) A data frame with columns for grain sizes (cell area) and occupancies in that order;
 2) A data frame of cell coordinates and presence-absence data (presence = 1; absence = 0). Column names must be "lon", "lat", and "presence" in that order;
-3) A raster layer of presence-absence data (presence = 1; absence = 0; no data = NA).
+3) A spatial points object of class `sf` containing a data frame with presence-absence data (presence = 1; absence = 0) for each coordinate;
+4) A raster layer of presence-absence data (presence = 1; absence = 0; no data = NA).
 
-```{r Flow, echo = FALSE, out.width = "70%", fig.align = "left", fig.cap = "Structure of the `downscale` package showing the flow between the seven functions (yellow) and the three output object classes (orange). Black arrows represent the input of raw data of three types: a raster layer of presence-absence data, a data frame of cell coordinates and presence-absence for each cell, and a data frame of occupancies at coarse-grain sizes. Yellow arrows are where the output of one function may be used as the input for the next function."}
+```{r Flow, echo = FALSE, out.width = "70%", fig.align = "left", fig.cap = "Structure of the `downscale` package showing the flow between the seven functions (yellow) and the three output object classes (orange). Black arrows represent the input of raw data of four types: a raster layer or a spatial points layer of presence-absence data, a data frame of cell coordinates and presence-absence for each cell, and a data frame of occupancies at coarse-grain sizes. Yellow arrows are where the output of one function may be used as the input for the next function."}
 knitr::include_graphics("figures/Flow.png")
 ```
 
@@ -73,7 +74,7 @@ To carry out downscaling with the Hui model (Hui et al. 2006, 2009) or upgrainin
 |Data frame of cell coordinates and presence-absence data|Downscale (including Hui model)|($\texttt{upgrain} \Rightarrow$) $\texttt{hui.downscale} \Rightarrow$ <br /> $\texttt{plot}$|
 |Raster layer of presence-absence data|Downscale (including Hui model)|($\texttt{upgrain} \Rightarrow$) $\texttt{hui.downscale} \Rightarrow$ <br /> $\texttt{plot}$|
 |Data frame of cell areas and occcupancies|Ensemble modelling (excluding Hui model)|$\texttt{ensemble.downscale}$|	
-|Data frame of cell coordinatesand presence-absence data|Ensemble modelling (with or without Hui model)|$\texttt{upgrain} \Rightarrow$ <br /> $\texttt{ensemble.downscale}$|
+|Data frame of cell coordinates and presence-absence data|Ensemble modelling (with or without Hui model)|$\texttt{upgrain} \Rightarrow$ <br /> $\texttt{ensemble.downscale}$|
 |Raster layer of presence-absence data|Ensemble modelling (with or without Hui model)|$\texttt{upgrain} \Rightarrow$ <br /> $\texttt{ensemble.downscale}$|
 
 # Package tutorial
@@ -397,23 +398,23 @@ It may be that instead of having pre-existing atlas data, we may need to create 
 
 The grain size (cell width) needs to be carefully chosen so that we can best meet the assumption that all cells have been sampled. The larger the grain size the greater our confidence in each cell's status, but the further we will have to downscale and the fewer coarse-grain data points we will have for model fitting. If there are cells or regions where we do not expect this to be the case it may be best to change these to NAs rather than assign them as absences.
 
-The library `rgbif` will automatically harvest GBIF data for a desired species for a specified region. If you do not already have it, then you can install the package through `install.packages("rgbif")`
+The library `rgbif` will automatically harvest GBIF data for a desired species for a specified region. If you do not already have it, then you can install the package through `install.packages("rgbif")`. We will use the `sf` package for handling the spatial points.
 ```{r}
 ## load in the necessary libraries
 library(rgbif)
-library(downscale)
+library(sf)
 ```
 
 We’ll get the UK records for the chalkhill blue (*Polyommatus coridon*), a butterfly species with a patchy breeding distribution largely in the south of the UK. We will confine ourselves to records only from the UK (`gbifopts = list(country = "GB")`). For this tutorial I have saved this dataset within the package, but you can repeat the download yourself with the following code. See `?occ_search` to explore the options of how to select different types and certainty of occurrence points.
 ```{r eval = FALSE}
 ### NOT RUN in this tutorial
 ### Run this code to download the data yourself (results will slightly differ)
-# records <- occ_search(scientificName = "Polyommatus coridon",
-#                       country        = "GB",
-#                       limit          = 10000,
-#                       hasCoordinate  = TRUE,
-#                       fields         = "minimal")
-# records <- records$data
+records <- occ_search(scientificName = "Polyommatus coridon",
+                      country        = "GB",
+                      limit          = 10000,
+                      hasCoordinate  = TRUE,
+                      fields         = "minimal")
+records <- records$data
 ```
 
 In this tutorial we will instead load a copy of the data already available in this package.
@@ -425,23 +426,23 @@ records <- read.table(recordsFile, header = TRUE)
 
 Whichever way you have got the data (either downloading your own set or loading in the data frame stored in the package), for our purposes we only need to extract the coordinates of the occurrences.
 ```{r}
-recordsCoords <- SpatialPoints(data.frame(Lon = records$decimalLongitude,
-                                          Lat = records$decimalLatitude), 
-                               proj4string = CRS("+proj=longlat +datum=WGS84
-                                                   +ellps=WGS84"))
+recordsCoords <- st_as_sf(records,
+                          coords = c("decimalLongitude", "decimalLatitude"),
+                          crs = crs("+proj=longlat +datum=WGS84 +ellps=WGS84"))
 ```
 
-The coordinates are in latitude/longitude based upon the WGS84 coordinate system. However, a lot of the point records for UK butterflies are collected based upon the British National Grid ("OSGB 1936"), which can be seen in the grid-like pattern of some of the points so it makes sense to reproject the points to this coordinate system, which is easy to do knowing that the EPSG code is 27700. As an added advantage we can also specify the units as km to make our upgraining easier. We will need to load in the rgdal package to handle the transformations.
+The coordinates are in latitude/longitude based upon the WGS84 coordinate system. However, a lot of the point records for UK butterflies are collected based upon the British National Grid ("OSGB 1936"), which can be seen in the grid-like pattern of some of the points so it makes sense to reproject the points to this coordinate system (the EPSG code is 27700 and details can be found at https://epsg.io/27700). As an added advantage we can also specify the units as km to make our upgraining easier.
 ```{r}
-library(rgdal)
-
 ## reproject the coordinates to British National Grid
-recordsCoords <- spTransform(recordsCoords, CRS("+init=epsg:27700 +units=km"))
+recordsCoords <- st_transform(recordsCoords,
+                              crs = st_crs("+proj=tmerc +lat_0=49 +lon_0=-2 
+                                        +k=0.9996012717 +x_0=400000 +y_0=-100000 
+                                        +ellps=airy +units=km +no_defs"))
 ```
 
 We can have a quick look at the point records if we like.
 ```{r fig.width = 6, fig.height = 5}
-plot(recordsCoords, axes = T)
+plot(st_geometry(recordsCoords), axes = TRUE)
 ```
 
 Now we have to convert these points in to a coarse-scale raster. The simplest method is to bound our raster by the limits of the location coordinates. Careful thought must also be put in to the grain size. It must be large enough that we are confident it is an accurate representation of presence-absence, but also small enough to allow upgraining to give at least three spatial scales worth of occupancy data for fitting the downscaling models. In the UK, butterflies are generally sampled at a 10 km grid cell, so we'll set a grain size of 20 km width (400 km$^2$), which gives us a little more certainty in our atlas data but will still comfortably allow us to upgrain to give three scales (400, 1600, 6400 km$^2$).
@@ -450,15 +451,15 @@ Now we have to convert these points in to a coarse-scale raster. The simplest me
 cellWidth <- 20
 
 # extract extent of coordinates
-coordsExtent <- extent(recordsCoords)
+coordsExtent <- ext(recordsCoords)
 
 ## create a blank raster to fit the coordinates (note the addition of half a 
 ## cell width on all sides)
-gbif_raster <- raster(xmn = coordsExtent@xmin - (cellWidth / 2),
-                      xmx = coordsExtent@xmax + (cellWidth / 2),
-                      ymn = coordsExtent@ymin - (cellWidth / 2),
-                      ymx = coordsExtent@ymax + (cellWidth / 2),
-                      res = cellWidth)
+gbif_raster <- rast(xmin = coordsExtent$xmin - (cellWidth / 2),
+                    xmax = coordsExtent$xmax + (cellWidth / 2),
+                    ymin = coordsExtent$ymin - (cellWidth / 2),
+                    ymax = coordsExtent$ymax + (cellWidth / 2),
+                    res = cellWidth)
                       
 ## assign cells with presence records as 1
 gbif_raster <- rasterize(recordsCoords, gbif_raster, field = 1)
@@ -487,13 +488,13 @@ occupancy$extent.stand
 
 Now we can run our ensemble downscaling models:
 ```{r fig.height = 6, fig.width = 7.5}
-ensemble <- ensemble.downscale(occupancies = occupancy,
-                               models = "all",
-                               new.areas = c(1, 10, 100, 400, 1600, 6400),
+ensemble <- ensemble.downscale(occupancies   = occupancy,
+                               models        = c("all"),
+                               new.areas     = c(1, 10, 100, 400, 1600, 6400),
                                tolerance_mod = 1e-3)
 ```
 
-The Thomas model hasn't converged satisfactorily and thrown up a warning message, and so too has the INB model which has predicted a 0 at the finest grain size which we know to be impossible. This highlights the importance of visually inspecting the model fits. We can try tweaking it’s starting parameters to see if we can get a better fit using the `starting_params` argument:
+The INB model has predicted a 0 at the finest grain size which we know to be impossible and so has thrown up a warning. As a result, we have not averaged across models at this finest grain (the grey line). This highlights the importance of visually inspecting the model fits. We can try tweaking it’s starting parameters to see if we can get a better fit using the `starting_params` argument:
 ```{r fig.height = 6, fig.width = 7.5}
 ensemble <- ensemble.downscale(occupancy,
                                models = "all",
@@ -501,10 +502,7 @@ ensemble <- ensemble.downscale(occupancy,
                                tolerance_mod = 1e-3,
                                starting_params = list(INB = list(C = 10, 
                                                                  gamma = 0.01, 
-                                                                 b = 0.1),
-                                                      Thomas = list(rho = 1e-6,
-                                                                    mu = 1,
-                                                                    sigma = 1)))
+                                                                 b = 0.1)))
 ```
 
 And the predicted mean area of occupancies for each grain size:
@@ -516,18 +514,19 @@ So far we have simply drawn a rectangle around our points, but perhaps we have a
 ```{r fig.height = 4, fig.width = 5}
 ### read in the shapefile
 uk <- system.file("extdata", "UK.shp", package = "downscale")
-uk <- shapefile(uk)
+uk <- st_read(uk)
+st_crs(uk) <- crs(recordsCoords)
 
 ## plot our GBIF records on top of the UK polygon
-plot(uk)
-plot(recordsCoords, add = TRUE, col = "red")
+plot(st_geometry(uk), axes = TRUE)
+plot(recordsCoords[1], add = TRUE, col = "red")
 ```
 
 Now, we make our raster of presence-absence the same way as before, except this time we set the extent to be the same as that of the polygon. We then mask the raster file with the UK polygon so that any cells outside this polygon are assigned as NA (unsampled cells):
 ```{r fig.height = 5, fig.width = 4}
 ## create a blank raster with the same extent as the UK polygon
-gbif_raster <- raster(ext = extent(uk),
-                      res = cellWidth)
+gbif_raster <- rast(ext = ext(uk),
+                    res = cellWidth)
 
 ## assign cells with presence records as 1
 gbif_raster <- rasterize(recordsCoords, gbif_raster, field = 1)
@@ -540,7 +539,7 @@ gbif_raster <- mask(gbif_raster, uk)
 
 ## plot the masked atlas raster and overlay with the UK polygon
 plot(gbif_raster, legend = FALSE)
-plot(uk, add = TRUE)
+plot(st_geometry(uk), add = TRUE)
 ```
 
 Now, we just upgrain and downscale as before:

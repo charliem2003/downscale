@@ -39,9 +39,7 @@ Two vignettes are available to guide users. Both work through examples in code:\
 \code{vignette("Upgraining", package = "downscale")}
 }
 \section{Credits}{
-This package was created as part of deliverable D3.2 of WP3 of the project:
-\bold{EU-BON: Building the European Biodiversity Observation Network} -
-a 7th Framework Programme funded by the European Union under Contract No. 308454.
+This package was created as part of deliverable D3.2 of WP3 of the project: \bold{EU-BON: Building the European Biodiversity Observation Network} - a 7th Framework Programme funded by the European Union under Contract No. 308454.
 }
 
 \author{

@@ -1,6 +1,6 @@
 NEWS for downscale package
 
-Changes for 4.3-0
+Changes for 5.0-0
 ---------------
 SWITCHING TO terra + sf FROM raster + sp
 - Simple reformatting

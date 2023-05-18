@@ -1,10 +1,12 @@
 ################################################################################
 # 
 # upgrain.R
-# Version 1.8
-# 16/05/2023
+# Version 2.0
+# 19/05/2023
 #
 # Updates:
+#   19/05/2023: v2.0 - CONVERTED TO TERRA AND SF
+#               error checking moved to checkInputs
 #   16/05/2023: Simple reformatting
 #   26/10/2021: uses on.exit to return to original par settings
 #   31/07/2017: Bug when using SpatialPointsDataFrame fixed
@@ -31,35 +33,36 @@
 # # args:
 #   atlas.data = either a raster file of presence-absence atlas data, or a data 
 #                frame of sampled cells with longitude, latitude and 
-#                presence-absence; or a SpatialPointsDataFrame with a data 
-#                frame containing 'presence'
+#                presence-absence; or a sf spatial points object with a data 
+#                frame containing 'presence'.
 #   cell.width = if data is a data frame, the cell widths of sampled cells.
 #   scales = the number of cells to upgrain. Upgraining will happen by factors 
 #            of 2 - ie if scales = 3, the atlas data will be aggregated in 2x2 
 #            cells, 4x4 cells and 8x8 cells.
 #   threshold = a value for the proportion of unsampled atlas cells allowed 
 #               within a cell at the largest grain size. Default = NULL.
-#   method = one of the default methods for selecting a threshold. There are four
+#   method = one of the default methods for selecting a threshold. There are
 #            four choices: "All_Sampled" (default), "All_Occurrences", 
 #            "Gain_Equals_Loss" or "Sampled_Only".
 #   plot = Plots the original atlas data alongside the standardised atlas data 
 #          at each grain size. Default = TRUE.
-#   return.rasters = If TRUE returns the extent-standardised atlas data upgrained 
-#                    to all grain sizes (NOTE: the extent-standardised atlas data 
-#                    at the original grain size is always returned regardless).
-#                    Default = FALSE.
+#   return.rasters = If TRUE returns the extent-standardised atlas data 
+#                    upgrained to all grain sizes (NOTE: the extent-standardised
+#                    atlas data at the original grain size is always returned
+#                    regardless). Default = FALSE.
 #
 # outputs:
 #   An object of class 'upgrain', containing five objects:
 #     threshold = a value for the threshold used.
 #     extent.stand = a value for the standardised extent.
-#     occupancy.stand = dataframe of cell area, extent and occupancies of after
-#                       upgrain-standardisation to be used as input in downscaling
-#     occupancy.orig = dataframe of cell area, extent and occupancies before
-#                       upgrain-standardisation.
+#     occupancy.stand = data frame of cell area, extent and occupancies of after
+#                       upgrain-standardisation to be used as input in
+#                       downscaling
+#     occupancy.orig = data frame of cell area, extent and occupancies before
+#                      upgrain-standardisation.
 #     atlas.raster.stand = A raster layer of the extent-standardised atlas data.
-#     scaled.rasters = (if return.rasters = TRUE) a list containing the 
-#                      extent-standardised atlas data upgrained to all grain sizes
+#     scaled.rasters = (if return.rasters = TRUE) a list containing the extent-
+#                      standardised atlas data upgrained to all grain sizes
 #
 ################################################################################
 
@@ -71,59 +74,16 @@ upgrain <- function(atlas.data,
                     plot = TRUE,
                     return.rasters = FALSE) {
   
-  ### Error checking: either a threshold is given or a method selected, not both
-  if((is.null(threshold) == FALSE) & (is.null(method) == FALSE)) {
-    stop("Both a threshold and a model have been given. Please set one to NULL")
-  }
+  ##############################################################################
+  ### Error checking
+  checkInputs(inputFunction = "upgrain",
+                       atlas.data    = atlas.data,
+                       cell.width    = cell.width,
+                       scales        = scales,
+                       threshold     = threshold,
+                       method        = method)
   
-  if(is.null(method)) {
-    ### Error checking: threshold is between 0 and 1
-    if(min(threshold) < 0){
-      stop("Threshold value must be between 0 and 1")
-    }
-    if(max(threshold) > 1){
-      stop("Threshold value must be between 0 and 1")
-    }
-  }
-  
-  if(is.null(threshold)) {
-    ### Error checking: only one method is selected
-    if(sum(method %in% c("Sampled_Only",
-                         "All_Sampled",
-                         "All_Occurrences",
-                         "Gain_Equals_Loss")) > 1) {
-      stop("Method is not one of the options")
-    }
-    
-    ### Error checking: method is one of the selections
-    if(!method %in% c("Sampled_Only",
-                       "All_Sampled",
-                       "All_Occurrences",
-                       "Gain_Equals_Loss")) {
-      stop("Method is not one of the options")
-    }
-  }
-  
-  ### Error checking: scales
-  if(scales < 2){
-    stop("Scales must be >1 (at least three grain sizes needed for downscaling")
-  }
-  
-  ### Error checking: if data frame needs cell width
-  if(is.data.frame(atlas.data)) {
-    if(is.null(cell.width)) {
-      stop("If data is data.frame cell.width is required")
-    }
-  }
-  
-  ### Error checking: if SpatialPointsDataFrame needs cell width
-  if(class(atlas.data)[1] == "SpatialPointsDataFrame") {
-    if(is.null(cell.width)) {
-      stop("If data is SpatialPointsDataFrame cell.width is required")
-    }
-  }
-  
-  ################################################################################
+  ##############################################################################
   ### data storage
   original <- data.frame(Cell.area = rep(NA, scales + 1), 
                          Extent    = rep(NA, scales + 1),
@@ -132,215 +92,180 @@ upgrain <- function(atlas.data,
                          Extent    = rep(NA, scales + 1),
                          Occupancy = rep(NA, scales + 1))
   
-  ### data manipulation
-  if(is.data.frame(atlas.data)) {
-    ### error checking: format of data frame
-    if(ncol(atlas.data) != 3) {
-      stop("Input data frame must contain three columns named 'x', 
-           'y', and 'presence' in that order")
-    }
-    ### error checking: column names
-    if(sum(names(atlas.data) != c("x", "y", "presence")) > 0) 
-    {
-      stop("Input data frame must contain three columns named 'x', 
-            'y', and 'presence' in that order")
-    }
-    
-    longitude <- atlas.data$x
-    latitude  <- atlas.data$y
-    presence  <- atlas.data$presence
-    presence[presence > 0] <- 1
-    shapefile <- sp::SpatialPointsDataFrame(coords = data.frame(x = 
-                                                                  longitude,
-                                                                y = 
-                                                                  latitude),
-                                            data = data.frame(presence = 
-                                                                presence)) 
-    atlas_raster <- raster::raster(ymn = min(latitude) - (cell.width / 2),
-                                   ymx = max(latitude) + (cell.width / 2),
-                                   xmn = min(longitude) - (cell.width / 2), 
-                                   xmx = max(longitude) + (cell.width / 2),
-                                   resolution = cell.width)
-    atlas_raster <- raster::rasterize(shapefile, atlas_raster)
-    atlas_raster <- raster::dropLayer(atlas_raster, 1)
+  ##############################################################################
+  ### data manipulation - data.frame -> sf -> raster (depending on input data)
+  
+  ### if data frame convert to spatial points first
+  if(class(atlas.data)[1] == "data.frame") {
+    atlas.data$presence[atlas.data$presence > 0] <- 1
+    atlas.data <- sf::st_as_sf(atlas.data, coords = c("x", "y"))
   }
   
-  if(class(atlas.data)[1] == "SpatialPointsDataFrame") {
-    ext <- extent(atlas.data)
-    atlas_raster <- raster::raster(ymn = ext@ymin - (cell.width / 2),
-                                   ymx = ext@ymax + (cell.width / 2),
-                                   xmn = ext@xmin - (cell.width / 2), 
-                                   xmx = ext@xmax + (cell.width / 2),
-                                   resolution = cell.width)
-    atlas_raster <- raster::rasterize(atlas.data, atlas_raster)
-    atlas_raster <- raster::dropLayer(atlas_raster, 1)
-    atlas_raster@data@values[atlas_raster@data@values > 0] <- 1
+  ### rasterize spatial points
+  if(class(atlas.data)[1] == "sf") {
+    ext <- sf::st_bbox(atlas.data)
+    atlas_raster <- terra::rast(xmin = ext$xmin - (cell.width / 2),
+                                xmax = ext$xmax + (cell.width / 2),
+                                ymin = ext$ymin - (cell.width / 2),
+                                ymax = ext$ymax + (cell.width / 2),
+                                resolution = cell.width)
+    atlas_raster$presence <- terra::rasterize(atlas.data, atlas_raster,
+                                              field = "presence", fun = max)
   }
   
-  if(class(atlas.data) == "RasterLayer") {
-    atlas_raster <- atlas.data@data@values
-    atlas_raster[atlas_raster > 0] <- 1
-    atlas_raster <- setValues(atlas.data, atlas_raster)
+  if(class(atlas.data)[1] == "SpatRaster") {
+    atlas_raster <- atlas.data
   }
+  
+  ### check that only 1s and 0s
+  atlas_raster[atlas_raster > 0] <- 1
   
   ### largest scale (all other layers are extended to equal this raster)
-  max_raster <- raster::aggregate(atlas_raster, (2 ^ scales), fun = max)
-  atlas_raster_extend <- raster::extend(atlas_raster, 
-                                        raster::extent(max_raster))
+  max_raster <- terra::aggregate(atlas_raster, fact = (2 ^ scales),
+                                 fun = "max", na.rm = TRUE)
+  atlas_raster_extend <- terra::extend(atlas_raster, terra::ext(max_raster))
   
-  ###############################################################
-  ########## Set new atlas data to selected threshold (atlas_thresh)
+  ##############################################################################
+  ### Set new atlas data to selected threshold (atlas_thresh)
   
   ### create boundary raster
   boundary_raster <- atlas_raster
-  boundary_raster@data@values[!is.na(boundary_raster@data@values)] <- 1
-  boundary_raster <- raster::aggregate(boundary_raster, (2 ^ scales), fun = sum)  
-  boundary_raster@data@values <- boundary_raster@data@values / ((2 ^ scales) ^ 2)
+  boundary_raster[!is.na(boundary_raster)] <- 1
+  boundary_raster <- terra::aggregate(boundary_raster, fact = (2 ^ scales),
+                                      fun = "sum", na.rm = TRUE)
+  boundary_raster <- boundary_raster / ((2 ^ scales) ^ 2)
   
-  ### run for threshold, "Sampled_Only" and "All_Sampled"
+  ### if no threshold specified determine threshold base on method
   if(is.null(threshold)) {
+    ### set thresholds for "Sampled_Only" and "All_Sampled"
     if(method == "Sampled_Only") {
       threshold <- 1
     }
     if(method == "All_Sampled") {
       threshold <- 0
     }
-  }
-  if(is.null(threshold) == FALSE) {
-    ### set extent of maximum grain size raster to threshold (max_raster_thresh)
-    max_raster_thresh <- max_raster
-    max_raster_thresh@data@values[boundary_raster@data@values < threshold] <- NA
-    max_raster_thresh@data@values[max_raster_thresh@data@values == 0] <- 1
-    max_raster_thresh <- raster::disaggregate(max_raster_thresh, 
-                                              (2 ^ scales), fun = max)
-    
-    ### extend and crop atlas raster to new extent (atlas_thresh)
-    atlas_thresh <- atlas_raster
-    atlas_thresh <- raster::extend(atlas_thresh, 
-                                   raster::extent(max_raster_thresh))
-    atlas_thresh@data@values[atlas_thresh@data@values == 1] <- 2
-    atlas_thresh@data@values[atlas_thresh@data@values == 0] <- 1
-    atlas_thresh@data@values[is.na(atlas_thresh@data@values)] <- 0
-    atlas_thresh <- raster::overlay(max_raster_thresh, atlas_thresh, fun = sum)
-    atlas_thresh@data@values[atlas_thresh@data@values == 1] <- 0
-    atlas_thresh@data@values[atlas_thresh@data@values == 2] <- 0
-    atlas_thresh@data@values[atlas_thresh@data@values == 3] <- 1
-  }
   
-  ### run for "All_Occurrences" or "Gain_Equals_Loss")
-  if(is.null(threshold)) {
-    thresholds <- seq(0, 1, 0.01)
-    
-    ### Loop through thresholds
-    land <- data.frame(Threshold           = thresholds, 
-                       SampledExcluded     = rep(NA, length(thresholds)),
-                       SampledIncluded     = NA,
-                       UnsampledAdded      = NA, 
-                       Extent              = NA,
-                       OccurrencesExcluded = NA)
-    
-    atlas_boundary <- atlas_raster_extend
-    atlas_boundary@data@values[atlas_boundary@data@values == 0] <- 1
-    atlas_boundary@data@values[is.na(atlas_boundary@data@values)] <- 0
-    
-    for(j in 1:length(thresholds)){
-      atlas_boundary_thresh <- max_raster
-      atlas_boundary_thresh@data@values[boundary_raster@data@values <
-                                          thresholds[j]] <- NA
-      atlas_boundary_thresh@data@values[atlas_boundary_thresh@data@values >=
-                                          0] <- 2
-      atlas_boundary_thresh@data@values[is.na(
-        atlas_boundary_thresh@data@values)] <- 0
-      atlas_boundary_thresh <- raster::disaggregate(atlas_boundary_thresh,
-                                                    (2 ^ scales),
-                                                    fun = max)
-      both <- raster::overlay(atlas_boundary_thresh, atlas_boundary, fun = sum)
-      land[j, "SampledExcluded"] <- sum(both@data@values == 1, na.rm = TRUE)
-      land[j, "UnsampledAdded"] <- sum(both@data@values == 2, na.rm = TRUE)
-      land[j, "SampledIncluded"] <- sum(both@data@values == 3, na.rm = TRUE)
-      land[j, "Extent"] <- sum(atlas_boundary_thresh@data@values == 2, 
-                               na.rm = TRUE)
+    ### determine thresholds for "All_Occurrences" or "Gain_Equals_Loss" methods
+    if(method %in% c("All_Occurrences", "Gain_Equals_Loss")) {
+      atlas_boundary <- atlas_raster_extend
+      atlas_boundary[atlas_boundary == 0]   <- 1
+      atlas_boundary[is.na(atlas_boundary)] <- 0
       
-      both <- raster::overlay(atlas_boundary_thresh, atlas_raster_extend,
-                              fun = sum)
-      land[j, "OccurrencesExcluded"] <- round(sum(both@data@values == 1, 
-                                                  na.rm = TRUE) /
-                                                sum(atlas_raster@data@values == 1,
-                                                    na.rm = TRUE), 3)
+      ### Loop through potential thresholds
+      thresholds <- seq(0, 1, 0.01)
+      
+      land <- data.frame(Threshold           = thresholds, 
+                         SampledExcluded     = rep(NA, length(thresholds)),
+                         SampledIncluded     = NA,
+                         UnsampledAdded      = NA, 
+                         Extent              = NA,
+                         OccurrencesExcluded = NA)
+      
+      for(j in 1:length(thresholds)) {
+        ### redraw boundary based on threshold
+        atlas_boundary_thresh <- max_raster
+        atlas_boundary_thresh[boundary_raster < thresholds[j]] <- NA
+        atlas_boundary_thresh[atlas_boundary_thresh >= 0]   <- 2
+        atlas_boundary_thresh[is.na(atlas_boundary_thresh)] <- 0
+        atlas_boundary_thresh <- terra::disagg(atlas_boundary_thresh,
+                                               fact = (2 ^ scales),
+                                               method = "near")
+        both <- sum(atlas_boundary_thresh, atlas_boundary)
+        
+        ### store values in data frame
+        land$SampledExcluded[j] <- sum(terra::values(both) == 1, na.rm = TRUE)
+        land$UnsampledAdded[j]  <- sum(terra::values(both) == 2, na.rm = TRUE)
+        land$SampledIncluded[j] <- sum(terra::values(both) == 3, na.rm = TRUE)
+        land$Extent[j]          <- sum(terra::values(atlas_boundary_thresh) ==2,
+                                       na.rm = TRUE)
+        
+        ### proportion occurrences that fall outside boundary
+        both <- sum(atlas_boundary_thresh, atlas_raster_extend)
+        excl <- sum(terra::values(both) == 1, na.rm = TRUE) /
+                sum(terra::values(atlas_raster) == 1, na.rm = TRUE)
+        land$OccurrencesExcluded[j] <- round(excl, 3)
+      }
+      
+      ### assign appropriate thresholds
+      if(method == "All_Occurrences") {
+        threshold <- thresholds[max(which(land[, "OccurrencesExcluded"] == 0))]
+      }
+      if(method == "Gain_Equals_Loss") {
+        diffs <- land$Extent - sum(terra::values(atlas_boundary), na.rm = TRUE)
+        threshold <- thresholds[which.min(abs(diffs))]
+      }
     }
-    Gain_loss.thresh <- thresholds[which.min(abs(land[, "Extent"] - 
-                                                   sum(atlas_boundary@data@values, na.rm = TRUE)))]
-    Presence.thresh <- thresholds[max(which(land[, "OccurrencesExcluded"]== 0))]
   }
   
-  if(is.null(threshold)) {    
-    if(method == "All_Occurrences") {
-      threshold <- Presence.thresh
-    }
-    if(method == "Gain_Equals_Loss") {
-      threshold <- Gain_loss.thresh
-    }
-    ### set extent of maximum grain size raster to threshold (max_raster_thresh)
-    max_raster_thresh <- max_raster
-    max_raster_thresh@data@values[boundary_raster@data@values < threshold] <- NA
-    max_raster_thresh@data@values[max_raster_thresh@data@values == 0] <- 1
-    max_raster_thresh <- raster::disaggregate(max_raster_thresh,
-                                              (2 ^ scales), fun = max)
-    
-    ### extend and crop atlas raster to new extent (atlas_thresh)
-    atlas_thresh <- atlas_raster
-    atlas_thresh <- raster::extend(atlas_thresh, 
-                                   raster::extent(max_raster))
-    atlas_thresh@data@values[atlas_thresh@data@values == 1] <- 2
-    atlas_thresh@data@values[atlas_thresh@data@values == 0] <- 1
-    atlas_thresh@data@values[is.na(atlas_thresh@data@values)] <- 0
-    atlas_thresh <- raster::overlay(max_raster_thresh, atlas_thresh, fun = sum)
-    atlas_thresh@data@values[atlas_thresh@data@values == 1] <- 0
-    atlas_thresh@data@values[atlas_thresh@data@values == 2] <- 0
-    atlas_thresh@data@values[atlas_thresh@data@values == 3] <- 1
+  ### if threshold is still NULL then there is a problem
+  if(is.null(threshold)) {
+    stop("Unable to determine a threshold and no threshold suggested")
   }
   
-  ####################################################################
+  ### set extent of maximum grain size raster to threshold (max_raster_thresh)
+  max_raster_thresh <- max_raster
+  max_raster_thresh[boundary_raster < threshold] <- NA
+  max_raster_thresh[!is.na(max_raster_thresh)] <- 1
+  max_raster_thresh <- terra::disagg(max_raster_thresh,
+                                     fact = (2 ^ scales), method = "near")
+  
+  ### extend and crop atlas raster to new extent (atlas_thresh)
+  atlas_thresh <- atlas_raster
+  atlas_thresh <- terra::extend(atlas_thresh, terra::ext(max_raster_thresh))
+  atlas_thresh[atlas_thresh == 1]   <- 2
+  atlas_thresh[atlas_thresh == 0]   <- 1
+  atlas_thresh[is.na(atlas_thresh)] <- 0
+  
+  atlas_thresh <- sum(atlas_thresh, max_raster_thresh)
+  atlas_thresh[atlas_thresh == 1] <- 0
+  atlas_thresh[atlas_thresh == 2] <- 0
+  atlas_thresh[atlas_thresh == 3] <- 1
+  
+  ##############################################################################
   #### calculate occupancy at all grain sizes in original atlas data
-  original[1, "Cell.area"] <- raster::res(atlas_raster)[1] ^ 2
-  original[1, "Extent"] <- sum(!is.na(atlas_raster@data@values)) * 
-    original[1, "Cell.area"]
-  original[1, "Occupancy"] <- sum(atlas_raster@data@values == 1, na.rm = TRUE) /
-    sum(!is.na(atlas_raster@data@values))
+  
+  original$Cell.area[1] <- terra::res(atlas_raster)[1] ^ 2
+  original$Extent[1]    <- sum(!is.na(terra::values(atlas_raster))) *
+                           original$Cell.area[1]
+  original$Occupancy[1] <- sum(terra::values(atlas_raster) == 1, na.rm = TRUE) /
+                           sum(!is.na(terra::values(atlas_raster)))
   
   for(i in 1:scales) {
-    scaled_raster <- raster::aggregate(atlas_raster, 2 ^ i, fun = max)
-    original[i + 1, "Cell.area"] <- raster::res(scaled_raster)[1] ^ 2
-    original[i + 1, "Extent"] <- sum(!is.na(scaled_raster@data@values)) * 
-      original[i + 1, "Cell.area"]
-    original[i + 1, "Occupancy"] <- sum(scaled_raster@data@values == 1,
-                                        na.rm = TRUE) /
-      sum(!is.na(scaled_raster@data@values))
+    scaled_raster <- terra::aggregate(atlas_raster, fact = (2 ^ i), fun = "max")
+    original$Cell.area[i + 1] <- terra::res(scaled_raster)[1] ^ 2
+    original$Extent[i + 1]    <- sum(!is.na(terra::values(scaled_raster))) *
+                                 original$Cell.area[i + 1]
+    original$Occupancy[i + 1] <- sum(terra::values(scaled_raster) == 1,
+                                   na.rm = TRUE) /
+                                 sum(!is.na(terra::values(scaled_raster)))
   }
   
-  ####################################################################
+  ##############################################################################
   #### calculate occupancy at all grain sizes in standardised atlas data
-  extended[1, "Cell.area"] <- raster::res(atlas_thresh)[1] ^ 2
-  extended[1, "Extent"] <- sum(!is.na(atlas_thresh@data@values)) * 
-    extended[1, "Cell.area"]
-  extended[1, "Occupancy"] <- sum(atlas_thresh@data@values == 1, na.rm = TRUE) /
-    sum(!is.na(atlas_thresh@data@values))
+  
+  extended$Cell.area[1] <- terra::res(atlas_thresh)[1] ^ 2
+  extended$Extent[1]    <- sum(!is.na(terra::values(atlas_thresh))) * 
+                           extended$Cell.area[1]
+  extended$Occupancy[1] <- sum(terra::values(atlas_thresh == 1, na.rm = TRUE)) /
+                           sum(!is.na(terra::values(atlas_thresh)))
   
   for(i in 1:scales) {
-    scaled_raster <- raster::aggregate(atlas_thresh, 2 ^ i, fun = max)
+    scaled_raster <- terra::aggregate(atlas_thresh, fact = (2 ^ i), fun = "max")
     if(return.rasters == TRUE) {
       assign(paste("scaled_raster", i, sep = "_"), scaled_raster)
     }
-    extended[i + 1, "Cell.area"] <- raster::res(scaled_raster)[1] ^ 2
-    extended[i + 1, "Extent"] <- sum(!is.na(scaled_raster@data@values)) *
-      extended[i + 1, "Cell.area"]
-    extended[i + 1, "Occupancy"] <- sum(scaled_raster@data@values == 1,
+    extended$Cell.area[i + 1] <- terra::res(scaled_raster)[1] ^ 2
+    extended$Extent[i + 1]    <- sum(!is.na(terra::values(scaled_raster))) *
+                                 extended$Cell.area[i + 1]
+    extended$Occupancy[i + 1] <- sum(terra::values(scaled_raster) == 1,
                                         na.rm = TRUE) /
-      sum(!is.na(scaled_raster@data@values))
+                                 sum(!is.na(terra::values(scaled_raster)))
   }
-  extended[, "Cell.area"] <- original[, "Cell.area"]
+  extended$Cell.area <- original$Cell.area
   
+  ##############################################################################
   ### plotting
+  
   if(plot == TRUE) {  
     ### set par values for plotting
     parOrig <- par(no.readonly = TRUE)
@@ -348,53 +273,59 @@ upgrain <- function(atlas.data,
     par(mfrow = c(2, ceiling((scales + 2) / 2)), mar = c(3, 3, 3.5, 3))
     
     ########### Plot 1 - original atlas data
-    plot(atlas_raster_extend,
-         col = c("white", "white"),
-         legend = FALSE, 
-         axes = FALSE,
-         main = paste("Original atlas data:\n cell area = ", 
-                      original[1, "Cell.area"], sep = ""))
-    plot(atlas_raster,
-         col = c("white", "red"),
-         legend = FALSE, 
-         axes = FALSE,
-         colNA = "dark grey",
-         add = TRUE)
+    terra::plot(atlas_raster_extend,
+                col = c("white", "white"),
+                legend = FALSE, 
+                axes = FALSE,
+                main = paste0("Original atlas data:\n cell area = ", 
+                              original$Cell.area[1]))
+    terra::plot(atlas_raster,
+                col = c("white", "red"),
+                legend = FALSE, 
+                axes = FALSE,
+                colNA = "dark grey",
+                add = TRUE)
     
     ########### Plot 2 - standardised atlas data - atlas grain size
-    plot(atlas_thresh,
-         col = c("white", "red"),
-         legend = FALSE, 
-         axes = FALSE,
-         colNA = "dark grey",
-         main = paste("Standardised atlas data:\n cell area = ", 
-                      original[1, "Cell.area"], sep = ""))
+    terra::plot(atlas_thresh,
+                col = c("white", "red"),
+                legend = FALSE, 
+                axes = FALSE,
+                colNA = "dark grey",
+                main = paste0("Standardised atlas data:\n cell area = ", 
+                              original$Cell.area[1]))
     
     for(i in 1:scales) {
-      scaled_raster <- raster::aggregate(atlas_thresh, 2 ^ i, fun = max)
+      scaled_raster <- terra::aggregate(atlas_thresh,
+                                        fact = (2 ^ i),
+                                        fun = "max")
       
       ########### Plots 3 ... - standardised atlas data - all other grain sizes
-      plot(scaled_raster,
-           col = c("white", "red"),
-           colNA = "dark grey",
-           legend = FALSE, 
-           axes = FALSE,
-           main = paste("Standardised atlas data:\n cell area = ", 
-                        original[i + 1, "Cell.area"], sep = ""))    
+      terra::plot(scaled_raster,
+                  col = c("white", "red"),
+                  colNA = "dark grey",
+                  legend = FALSE, 
+                  axes = FALSE,
+                  main = paste0("Standardised atlas data:\n cell area = ", 
+                                original$Cell.area[i + 1]))    
     }
   }
   
+  ##############################################################################
+  ### output
+  
   output <- list(threshold          = threshold,
-                 extent.stand       = extended[1, "Extent"],
+                 extent.stand       = extended$Extent[1],
                  occupancy.stand    = extended,
                  occupancy.orig     = original,
                  atlas.raster.stand = atlas_thresh)
+  
   if(return.rasters == TRUE) {
     scaled.rasters <- list()
     for(i in 1:scales) {
       scaled.rasters[i] <- get(paste("scaled_raster", i, sep = "_"))
     }
-    names(scaled.rasters) <- paste("scaled.raster", extended[-1, "Cell.area"], sep = "")
+    names(scaled.rasters) <- paste0("scaled.raster", extended$Cell.area[-1])
     output <- list(threshold          = threshold,
                    extent.stand       = extended[1, "Extent"],
                    occupancy.stand    = extended,
@@ -402,6 +333,7 @@ upgrain <- function(atlas.data,
                    atlas.raster.stand = atlas_thresh,
                    scaled.rasters     = scaled.rasters)
   }
+  
   class(output) <- "upgrain"
   return(output)
 }

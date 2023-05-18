@@ -1,10 +1,12 @@
 ################################################################################
 # 
 # ensemble.downscale.R
-# Version 1.4
-# 16/05/2023
+# Version 2.0
+# 22/05/2023
 #
 # Updates:
+#   22/05/2023: v2.0 - CONVERTED TO TERRA AND SF
+#               error checking moved to checkInputs
 #   16/05/2023: Simple reformatting
 #   26/10/2021: uses on.exit to return to original par settings
 #   24/11/2016: Bug fixed with apply in error checking
@@ -53,69 +55,42 @@ ensemble.downscale <- function(occupancies,
                                plot = TRUE,
                                verbose = TRUE) {
 
-  ## error checking - model name is correct
-  if (length(models) == 1) {
-    if (models == "all") {
+  ##############################################################################
+  ### Error checking
+  
+  checkInputs(inputFunction = "ensemble.downscale",
+              occupancies   = occupancies,
+              models        = models,
+              extent        = extent)
+
+  ##############################################################################
+  ### data handling
+  
+  ### list of models to run
+  if(length(models) == 1) {
+    if(models == "all") {
       model.list <- c("Nachman","PL","Logis","Poisson","NB",
                       "GNB","INB","FNB","Thomas", "Hui")
     }
-    if (models != "all") {
-      stop("Only one model selected: ensemble modelling not applicable", 
-           call. = FALSE)
-    }
+  } else {
+    model.list <- models    
   }
   
-  if(any(!models %in% c("Nachman", "PL", "Logis", "Poisson", "NB", "GNB", 
-                        "INB", "FNB", "Thomas", "Hui", "all"))) {
-    stop("Model name invalid", call. = FALSE)
-  }
-  
-  ## error checking - if not an upgrain object
-  if(class(occupancies) != "upgrain") {
-    # error checking - extent given
-    if(is.null(extent)) {
-      stop("No extent given (occupancies is not of class 'upgrain'")
-    }
-    
-    # error checking - extent larger than largest grain size
-    if(extent < max(occupancies[, 2])) {
-      stop("Total extent is smaller than the largest grain size! 
-           Are the units correct?")
-    }
-    
-    # error checking - for hui model occupancies is upgrain object
-    if (length(models) == 1) {
-      if(models == "all") {
-       stop("Hui model can not be run if occupancies is not of class 'upgrain'")
-      }
-    }
-    if(any(models == "Hui")) {
-      stop("Hui model can not be run if occupancies is not of class 'upgrain'")
-    }
-  }
-  
+  ### extract info from upgrain object
   if(class(occupancies) == "upgrain") {
-    cell.width <- raster::res(occupancies$atlas.raster.stand)[1]
+    cell.width <- terra::res(occupancies$atlas.raster.stand)[1]
     extent <- occupancies$extent.stand
   }
   
-  # error checking - if model = Hui then cell.width must be present
-  if(any(models == "Hui")) {
-    if(is.null(cell.width)) {
-      stop("Cell.width must be specified for the Hui model")
-    }
-  }
-  
-  ## data handling
-  if (length(models) > 1) {
-    model.list <- models
-  }
-  
+  ### any optional parameters for specific models
   starting_params_opts <- starting_params
   starting_params_mods <- NULL
   if(!is.null(starting_params)) {
     starting_params_mods <- names(starting_params_opts)
   }
+  
+  ##############################################################################
+  ### Results storage
   
   all.predicted <- as.data.frame(matrix(NA, 
                                         ncol = (length(model.list) + 1),
@@ -123,11 +98,13 @@ ensemble.downscale <- function(occupancies,
   colnames(all.predicted) <- c("Cell.area", model.list)
   all.predicted$Cell.area <- new.areas
   
-  # modelling
+  ##############################################################################
+  ### Modelling
+  
   for (i in 1:length(model.list)) {
     model.run <- model.list[i]
     
-    ## see if there are user-inputted starting parameters
+    ### see if there are user-inputted starting parameters
     if(!is.null(starting_params_mods)) {
       if(any(starting_params_mods == model.run)) {
         starting_params_mod <- starting_params_opts[[model.run]]
@@ -142,7 +119,7 @@ ensemble.downscale <- function(occupancies,
       cat(paste(model.run, "model is running..."))
     }
     
-    ### For the Hui model
+    ### For all models except Hui
     if(model.run != "Hui") {
       mod <- downscale(occupancies     = occupancies,
                        model           = model.run,
@@ -158,7 +135,7 @@ ensemble.downscale <- function(occupancies,
       all.predicted[, i + 1] <- est$predicted[, "Occupancy"]
     }
     
-    ### All other models
+    ### For the Hui model
     if(model.run == "Hui") {
       new.areas.hui <- new.areas[new.areas < (cell.width ^ 2)]
       est <- hui.downscale(atlas.data = occupancies, 
@@ -173,12 +150,15 @@ ensemble.downscale <- function(occupancies,
       cat(paste("  complete", "\n"))
     }
   }
+  
+  ### save results
   all.predicted$Means <- exp(rowMeans(log(all.predicted[, -1]), na.rm = TRUE))
   aoo.predicted <- all.predicted
   aoo.predicted[, -1] <- aoo.predicted[, -1] * extent
   
-  
+  ##############################################################################
   ### optional plotting
+  
   if (plot == TRUE) {
     parOrig <- par(no.readonly = TRUE)
     on.exit(par(parOrig))
@@ -213,7 +193,9 @@ ensemble.downscale <- function(occupancies,
     }
   }
   
+  ##############################################################################
   ### Output
+  
   output <- list(Occupancy = all.predicted,
                  AOO = aoo.predicted)
   return(output)

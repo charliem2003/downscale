@@ -54,7 +54,7 @@ d) The proportion of known presences excluded.
 
 ```{r fig.show = "hide"}
 # The data may be a raster layer of presence (1) and absence (0) data or a
-# data frame of cell centre coordinates and presence-absence data in which case
+# data frame of cell center coordinates and presence-absence data in which case
 # it must have these column names: "x", "y", "presence"
 data.file <- system.file("extdata", "atlas_data.txt", package = "downscale")
 atlas.data <- read.table(data.file, header = TRUE)

@@ -15,25 +15,19 @@ model descriptions.}
 
 \item{extent}{total area in same units as occupancy. If using an object of class \code{"upgrain"}, this is automatically inputted.}
 
-\item{tolerance}{only applicable for the \code{Thomas} model. The tolerance
-  used during integration in the Thomas model during optimisation of
-  parameters. Lower numbers allow for greater accuracy but require longer
-  processing times (default = \code{1e-6}).}
+\item{tolerance}{only applicable for the \code{Thomas} model. The tolerance used during integration in the Thomas model during optimisation of parameters. Lower numbers allow for greater accuracy but require longer processing times (default = \code{1e-6}).}
   
 \item{starting_params}{a list of starting values for model parameters. Useful if the default values are not converging during optimisation. The parameter names must be the same for the default values (see \code{Details} for information on the parameters).}
 }
 
 \value{
-\code{downscale} returns an object of class \code{"downscale"} containing
-  four objects:
+\code{downscale} returns an object of class \code{"downscale"} containing four objects:
   \item{model}{Downscaling model selected.}
   \item{pars}{Estimated parameters for the downscaling model.}
    \item{observed}{Data frame containing two columns:
    \tabular{lll}{
-     \code{Cell.area} \tab  \tab Grain sizes for which occupancy have been
-       observed.\cr
-     \code{Occupancy} \tab  \tab Observed area of occupancy for each grain
-       size.\cr
+     \code{Cell.area} \tab  \tab Grain sizes for which occupancy have been observed.\cr
+     \code{Occupancy} \tab  \tab Observed area of occupancy for each grain size.\cr
      }
    }
   \item{extent}{Only for \code{FNB} and \code{Thomas} models.}
@@ -42,7 +36,7 @@ model descriptions.}
 Fits the log observed proportion of occupancies against log grain size (cell area) for coarse-scale data (typically atlas data) for nine commonly used downscaling models (see Azaele et al. 2012 and Barwell et al. 2014). See \code{\link{hui.downscale}} for downscaling using the Hui model. The parameters of the fitted models may then be used to estimate the area of occupancy at finer grain sizes than the observed data using \code{\link{predict.downscale}}. Presence-absence atlas data can be prepared for downscaling using \code{\link{upgrain}}.
 }
 \details{
-Nine downscaling models are available. \code{area} is the grain size (cell area) and \code{extent} the total area in the same units:
+Nine downscaling models are available (and also see \code{\link{hui.downscale}} for downscaling using the Hui model). \code{area} is the grain size (cell area) and \code{extent} the total area in the same units:
 
 \if{html}{
  \tabular{llll}{
@@ -73,16 +67,9 @@ Nine downscaling models are available. \code{area} is the grain size (cell area)
 }
 \if{latex}{\figure{Equations.png}{options: width=13cm}}
 
-The finite negative binomial model (\code{"FNB"}) incorporates several gamma
-functions. This may result in integers larger than is possible to store in
-R. Therefore multiple precision floating point numbers (\code{\link{mpfr}}
-function in package \pkg{Rmpfr}) are used to make calculations possible.
+The finite negative binomial model (\code{"FNB"}) incorporates several gamma functions. This may result in integers larger than is possible to store in R. Therefore multiple precision floating point numbers (\code{\link{mpfr}} function in package \pkg{Rmpfr}) are used to make calculations possible.
 
-The Thomas model incorporates spatial point processes in order to estimate 
-species aggregations. This involves multi-dimensional integration which may be 
-time-consuming. Users can alter the tolerance value during the integration
-process - a smaller value will give more accurate estimates but longer
-processing times.
+The Thomas model incorporates spatial point processes in order to estimate species aggregations. This involves multi-dimensional integration which may be time-consuming. Users can alter the tolerance value during the integration process - a smaller value will give more accurate estimates but longer processing times.
  
 The optimisation procedure requires initial starting values for all model parameters. In most cases the default values should work, however if the model is not converging adequately it is possible to input the starting parameters. The parameters must be in the form of a list with the same parameter names as in the table below. For example for the \code{Nachman} model the code would be \code{starting_params = list("C" = 0.1, "z" = 0.01)}. Please take particular note of captials. The default starting parameters are:
 

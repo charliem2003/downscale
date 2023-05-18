@@ -6,7 +6,7 @@ hui.downscale(atlas.data, cell.width, new.areas, extent = NULL,
               tolerance = 1e-6, plot = FALSE)
 }
 \arguments{
-\item{atlas.data}{either an object of class \code{"upgrain"}; or a raster file where 1 = presence and 0 = absence; or an object of class SpatialPointsDataFrame atlas data where the data frame contains a single column of presence (1) and absences (0); or a data frame containing these columns: \code{presence} = presence - absence data; \code{x} = easting coordinates of cells; \code{y} = northing coordinates of cells.}
+\item{atlas.data}{either an object of class \code{"upgrain"}; or a raster file where 1 = presence and 0 = absence; or a spatial points object of class sf with a single column of presence (1) and absences (0); or a data frame containing these columns: \code{presence} = presence - absence data; \code{x} = easting coordinates of cells; \code{y} = northing coordinates of cells.}
 
 \item{cell.width}{the cell width of the atlas data.}
 
@@ -38,17 +38,10 @@ Returns an object of class \code{'predict.downscale'} with three
    }
 }
 \description{
-Predict area of occupancy at fine grain sizes from atlas data
-  using the Hui model. There is also a simple plot function. Essentially the function is equivalent to \code{\link{downscale}} and \code{\link{predict.downscale}} combined.
+Predict area of occupancy at fine grain sizes from atlas data using the Hui model. There is also a simple plot function. Essentially the function is equivalent to \code{\link{downscale}} and \code{\link{predict.downscale}} combined.
 }
 \details{
-The function estimates fine-scale occupancy from atlas-scale data
-  using the model developed by Hui. The model requires presence-absence data
-  only at a single scale (the atlas scale) and calculates the probability of
-  occupancy at a fine scale through the conditional probability that at the
-  atlas scale a randomly chosen cell adjacent to an occupied cell is also
-  occupied. Plotting can be called directly from
-  \code{\link{hui.downscale}} or from \code{\link{plot.predict.downscale}}.
+The function estimates fine-scale occupancy from atlas-scale data using the model developed by Hui. The model requires presence-absence data only at a single scale (the atlas scale) and calculates the probability of occupancy at a fine scale through the conditional probability that at the atlas scale a randomly chosen cell adjacent to an occupied cell is also occupied. Plotting can be called directly from \code{\link{hui.downscale}} or from \code{\link{plot.predict.downscale}}.
   
 NOTE: if comparing occupancy predictions from the Hui model with those from other models using \code{\link{downscale}} it is important that the atlas data used here is the standardised atlas data whose extent is the same as the largest grain size used in the other models. This ensures that all models are modelling the proportion of occupancy of the same extent. This standardised atlas raster can be obtained through the \code{\link{upgrain}} function (see \code{vignette("Upgraining", package = "downscale")} for more details.
 }
@@ -101,8 +94,7 @@ Marsh, C.J, Barwell, L.J., Gavish, Y., Kunin, W.E. (2018). downscale: An R packa
 Marsh, C.J, Gavish, Y., Kunin, W.E., Brummitt N.A. (2019). Mind the gap: Can downscaling Area of Occupancy overcome sampling gaps when assessing IUCN Red List status?, \emph{Diversity and Distributions} 25, 1832-1845.
 }
 \seealso{
-See \code{\link{downscale}} for estimating parameters of a
-  downscaling function from observed occupancies at coarse grain sizes using
+See \code{\link{downscale}} for estimating parameters of a downscaling function from observed occupancies at coarse grain sizes using
   other downscaling models.
   
 See \code{\link{upgrain}} for creating extent-standardised atlas data as an input.

@@ -2,24 +2,23 @@ Package: downscale
 Type: Package
 Title: Downscaling Species Occupancy
 Version: 5.0-0
-Date: 2023-05-16
+Date: 2023-05-22
 Author: person("Charles", "Marsh", role = c("aut", "cre"), comment = c(ORCID="0000-0002-0281-3115")),
 Maintainer: Charles Marsh <charlie.marsh@mailbox.org>
 URL: https://github.com/charliem2003/downscale
 Description: Uses species occupancy at coarse grain sizes to predict species occupancy at fine grain sizes. Ten models are provided to fit and extrapolate the occupancy-area relationship, as well as methods for preparing atlas data for modelling. See Marsh et. al. (2018) <doi:10.18637/jss.v086.c03>.
 License: GPL-2
 Depends:
-    raster (>= 2.4-20),
-    R (>= 3.0.0)
+    R (>= 3.0.0),
+    terra (>= 1.7-3)
 Imports:
     cubature (>= 1.1-2),
     graphics,
     grDevices,
     methods,
     minpack.lm (>= 1.1-9),
-    Rmpfr (>= 0.5-7),
-    sp (>= 1.2-0),
-    stats
+    stats,
+    sf (>= 1.0-9)
 Suggests:
     rgeos,
     rgdal,
@@ -29,6 +28,7 @@ Suggests:
     bookdown
 LazyData: true
 Collate:
+    'checkInputs.R'
     'DataInput.R'
     'downscale.R'
     'OptimisePars.R'

@@ -6,13 +6,11 @@ upgrain(atlas.data, cell.width = NULL, scales, threshold = NULL,
         method = "All_Sampled", plot = TRUE, return.rasters = FALSE)
 }
 \arguments{
-\item{atlas.data}{either a raster file of presence-absence; an object of class SpatialPointsDataFrame atlas data where the data frame contains a single column of presence (1) and absences (0); or a data frame of sampled cells, which must contain columns named 'x', 'y' and 'presence'.}
+\item{atlas.data}{either a raster file of presence-absence; a spatial points object of class sf where the data frame contains a single column of presence (1) and absences (0); or a data frame of sampled cells, which must contain columns named 'x', 'y' and 'presence'.}
 
-\item{cell.width}{if data is a data frame or SpatialPointsDataFrame, the cell widths of sampled cells. If data is a raster then leave as default (\code{= NULL})}
+\item{cell.width}{if data is a data frame or sf spatial points object, the cell widths of sampled cells. If data is a raster then leave as default (\code{= NULL})}
 
-\item{scales}{the number of cells to upgrain. Upgraining will happen by
-  factors of 2 - ie if scales = 3, the atlas data will be aggregated in 2x2
-  cells, 4x4 cells and 8x8 cells.}
+\item{scales}{the number of cells to upgrain. Upgraining will happen by factors of 2 - ie if scales = 3, the atlas data will be aggregated in 2x2 cells, 4x4 cells and 8x8 cells.}
 
 \item{threshold}{default = \code{NULL}. A user defined threshold for the proportion of unsampled atlas cells allowed within a cell at the largest grain size. Note: if a \code{method} is selected then threshold must be \code{NULL}.}
 
@@ -66,7 +64,7 @@ The user may input their own threshold or use one of four suggested threshold cr
 \tabular{llll}{
       Threshold \tab  Method \tab \tab Description \cr
       0  \tab All_Sampled	\tab \tab All of the original atlas data is included. \cr
-      Species specific \tab	All_Occurrences \tab \tab	The threshold where no occurrences in the atlas data are       excluded. \cr
+      Species specific \tab	All_Occurrences \tab \tab	The threshold where no occurrences in the atlas data are excluded. \cr
       Atlas specific \tab	Gain_Equals_Loss \tab \tab	The threshold where the number of sampled atlas cells reclassified as No Data equals the number of unsampled exterior cells reclassified as absence. In this threshold the new standardised extent also equals the extent of the original atlas data. \cr
       1 \tab	Sampled_Only \tab \tab	Only cells that contain 100\% sampled atlas data are included. \cr
       }
@@ -111,11 +109,9 @@ all_sampled$occupancy.stand
 ## and the original occupancies (note that extent varies with scale)
 all_sampled$occupancy.orig
 
-## if data is SpatialPointsDataFrame
+## if data is an sf spatial points object
 presence <- data.frame(presence = atlas.data$presence)
-spdf <- SpatialPointsDataFrame(coords = data.frame(x = atlas.data$x, 
-                                                   y = atlas.data$y),
-                               data = presence)
+spdf <- sf::st_as_sf(atlas.data, coords = c("x", "y")
                                
 all_sampled <- upgrain(atlas.data = spdf,
                        cell.width= 10,

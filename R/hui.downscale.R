@@ -1,10 +1,12 @@
 ################################################################################
 # 
 # Hui.downscale.R
-# Version 1.4
-# 27/07/2017
+# Version 2.0
+# 19/05/2023
 #
 # Updates:
+#   19/05/2023: v2.0 - CONVERTED TO TERRA AND SF
+#               error checking moved to checkInputs
 #   26/10/2021: uses on.exit to return to original par settings
 #   27/07/2017: SpatialPointsDataFrame allowed as input
 #               'lat' and 'lon' as column names replaced by 'x' and 'y'
@@ -18,8 +20,8 @@
 # Args:
 #   atlas.data: either a data frame containing a column of presence and absence 
 #               data and a column each for longitude and latitude; or a raster
-#               file where 1 = presence and 0 = absence; or a 
-#               SpatialPointsDataFrame with a data frame containing 'presence'
+#               file where 1 = presence and 0 = absence; or an sf spatial points
+#               object with a data frame containing 'presence'.
 #   cell.width: Cell area of the atlas data (ie resolution)
 #   new.areas: vector of grain sizes for model prediction (area)
 #   extent: extent of points for conversion to AOO
@@ -36,74 +38,56 @@ hui.downscale <- function(atlas.data,
                           tolerance = 1e-6,
                           plot = FALSE) {
   
-  ### error checking: if data frame requires extent
-  if(is.data.frame(atlas.data)) {
-    if(is.null(extent)) {
-      stop("Extent required if data input is data frame of coordinates")
-    }
-  }
-  
-  ### error checking: if SpatialPointsDataFrame requires extent
-  if(class(atlas.data)[1] == "SpatialPointsDataFrame") {
-    if(is.null(extent)) {
-      stop("Extent required if data input is SpatialPointsDataFrame")
-    }
-  }
-  
-  ### Error checking: if data frame needs cell width
-  if(is.data.frame(atlas.data)) {
-    if(is.null(cell.width)) {
-      stop("If data is data.frame cell.width is required")
-    }
-  }
-  
-  ### Error checking: if SpatialPointsDataFrame needs cell width
-  if(class(atlas.data)[1] == "SpatialPointsDataFrame") {
-    if(is.null(cell.width)) {
-      stop("If data is SpatialPointsDataFrame cell.width is required")
-    }
-  }
+  ##############################################################################
+  ### Error checking
+  checkInputs(inputFunction = "hui.downscale",
+              atlas.data = atlas.data,
+              cell.width = cell.width,
+              extent = extent) 
   
   ###############################################################################
   ### data input handling
-  if(class(atlas.data) == "upgrain") {
-    extent <- atlas.data$extent.stand
-    species <- raster::rasterToPoints(atlas.data$atlas.raster.stand)
-    species <- data.frame(presence = species[, 3],
-                          x = species[, "x"],
-                          y = species[, "y"])
-    cell.width <- raster::res(atlas.data$atlas.raster.stand)[1]
+  if(class(atlas.data)[1] %in% c("upgrain", "SpatRaster")) {
     cell.area <- cell.width ^ 2
+    
+    if(class(atlas.data)[1] == "upgrain") {
+      species <- atlas.data$atlas.raster.stand
+      names(species)[1] <- "presence"
+      cell.width <- terra::res(species)[1]
+      extent  <- atlas.data$extent.stand
+    }
+    
+    if(class(atlas.data)[1] == "SpatRaster") {
+      species <- atlas.data
+      names(species)[1] <- "presence"
+      cell.width <- terra::res(species)[1]
+      extent  <- sum(!is.na(terra::values(species))) * (cell.width ^ 2)
+    }
+    
+    cells <- which(!is.na(values(species)))
+    species <- data.frame(presence = species[cells],
+                          x        = terra::xFromCell(species, cells),
+                          y        = terra::yFromCell(species, cells))
   }
   
-  if(class(atlas.data) == "RasterLayer") {
-    species <- raster::rasterToPoints(atlas.data)
-    species <- data.frame(presence = species[, 3],
-                          x = species[, "x"],
-                          y = species[, "y"])
-    cell.width <- raster::res(atlas.data)[1]
-    cell.area <- cell.width ^ 2
+  if(class(atlas.data)[1] == "sf") {
+    species <- data.frame(presence = atlas.data$presence,
+                          x =        sf::st_coordinates(atlas.data)[, "X"],
+                          y =        sf::st_coordinates(atlas.data)[, "Y"])
   }
-  
-  if(class(atlas.data) == "SpatialPointsDataFrame") {
-    species <- data.frame(presence = atlas.data@data[, "presence"],
-                          x = species[, "x"],
-                          y = species[, "y"])
-    cell.area <- cell.width ^ 2
-  }
-  
-  if(is.data.frame(atlas.data)) {
+
+  if(class(atlas.data)[1] == "data.frame") {
     species <- atlas.data
-    cell.area <- cell.width ^ 2
   }
+  cell.area <- cell.width ^ 2
   
   ##############################################################################
-  ### error checking that it's presence-absence data
+  ### Error checking: that it's presence-absence data
   if(sum(species$presence > 1, na.rm = TRUE) > 0) {
-    stop("Presence-absence data not in 1's and 0's")
+    stop("Presence-absence data not in 1's and 0's", call. = FALSE)
   }
   
-  ### error checking: predicting at finer scales than atlas scale
+  ### Error checking: predicting at finer scales than atlas scale
   if(sum(new.areas >= cell.area) > 0) {
     stop("One or more fine scale grid sizes are larger than atlas scale grid size",
          call. = FALSE)

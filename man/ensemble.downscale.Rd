@@ -10,29 +10,19 @@ ensemble.downscale(occupancies, new.areas, extent, cell.width = NULL,
 \arguments{
 \item{occupancies}{Either a data frame containing two columns or an object of class "upgrain" from the upgrain function. If using the \code{Hui} model (or \code{model = "all"}) occupancies must be of class \code{"upgrain"}. If using a data frame the first column must be the grain sizes (cell area in squared units e.g. km^2). The second column is the proportion of occupancies at each grain size.}
 
-\item{new.areas}{vector of grain sizes (in squared units e.g. km^{2}) for which
-area of occupancy will be predicted.}
+\item{new.areas}{vector of grain sizes (in squared units e.g. km^{2}) for which area of occupancy will be predicted.}
 
 \item{extent}{total area in same units as occupancy. If using an object of class "upgrain", this is automatically inputted.}
 
 \item{cell.width}{the cell width of the atlas data. Only required for \code{Hui} model.}
 
-\item{tolerance_mod}{only applicable for the \code{Thomas} model. The
-tolerance used during integration in the Thomas model during optimisation
-of parameters. Lower numbers allow for greater accuracy but require longer
-processing times (default = \code{1e-6}).}
+\item{tolerance_mod}{only applicable for the \code{Thomas} model. The tolerance used during integration in the Thomas model during optimisation of parameters. Lower numbers allow for greater accuracy but require longer processing times (default = \code{1e-6}).}
 
-\item{tolerance_pred}{only applicable for the \code{Thomas} model. The
-tolerance used during the prediction stage.}
+\item{tolerance_pred}{only applicable for the \code{Thomas} model. The tolerance used during the prediction stage.}
 
-\item{tolerance_hui}{only applicable for the \code{Hui} model. The
-tolerance used during integration in the Thomas model during optimisation
-of parameters. Lower numbers allow for greater accuracy but require longer
-processing times (default = \code{1e-6}).}
+\item{tolerance_hui}{only applicable for the \code{Hui} model. The tolerance used during integration in the Thomas model during optimisation of parameters. Lower numbers allow for greater accuracy but require longer processing times (default = \code{1e-6}).}
 
-\item{models}{vector of chosen downscaling models. Default \code{models =
-"all"} runs all available models. See \code{\link{downscale}} for list of
-available models.}
+\item{models}{vector of chosen downscaling models. Default \code{models = "all"} runs all available models. See \code{\link{downscale}} for list of available models.}
 
 \item{starting_params}{Starting values for model parameters if a model is not converging sufficiently. A list where each model to be specified is a list of parameter values. The parameter names must be the same for the default values (see \code{Details} for information on the parameters and how to specify them).}
 

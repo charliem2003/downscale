@@ -7,40 +7,30 @@
 \arguments{
 \item{object}{a fitted object of class \code{'downscale'}.}
 
-\item{new.areas}{vector of grain sizes (in squared units e.g. km^{2}) for which
-area of occupancy will be predicted.}
+\item{new.areas}{vector of grain sizes (in squared units e.g. km^{2}) for which area of occupancy will be predicted.}
 
-\item{tolerance}{only applicable for the \code{Thomas} model. The tolerance
-  used during integration in the Thomas model during optimisation of
-  parameters. Lower numbers allow for greater accuracy but require longer
-  processing times (default = \code{1e-6}).}
+\item{tolerance}{only applicable for the \code{Thomas} model. The tolerance used during integration in the Thomas model during optimisation of parameters. Lower numbers allow for greater accuracy but require longer processing times (default = \code{1e-6}).}
 
-\item{plot}{if \code{plot = TRUE} (default) plots observed
-  and predicted occupancies against grain size on a log-log plot using 
+\item{plot}{if \code{plot = TRUE} (default) plots observed and predicted occupancies against grain size on a log-log plot using 
   \code{\link{plot.predict.downscale}}.}
 
 \item{\dots}{arguments, including graphical parameters for \code{\link{plot.predict.downscale}}, passed to other methods.}
 }
 
 \value{
-\code{predict} returns an object of class \code{'predict.downscale'} with three
-  objects:
+\code{predict} returns an object of class \code{'predict.downscale'} with three objects:
    \item{model}{Downscaling model used.}
    \item{predicted}{Data frame containing two columns:
    \tabular{lll}{
-     \code{Cell.area} \tab  \tab Grain sizes for which occupancies have been
-       estimated\cr
-     \code{Occupancy} \tab  \tab Predicted proportion of occupancy for each grain
-       size\cr
+     \code{Cell.area} \tab  \tab Grain sizes for which occupancies have been estimated\cr
+     \code{Occupancy} \tab  \tab Predicted proportion of occupancy for each grain size\cr
      \code{AOO} \tab  \tab Predicted area of occupancy (proportion of area occupancy multiplied by extent)\cr
      }
    }
    \item{observed}{Data frame containing two columns:
    \tabular{lll}{
-     \code{Cell.area} \tab  \tab Grain sizes for which occupancies have been
-       observed\cr
-     \code{Occupancy} \tab  \tab Observed proportion of occupancy for each grain
-       size\cr
+     \code{Cell.area} \tab  \tab Grain sizes for which occupancies have been observed\cr
+     \code{Occupancy} \tab  \tab Observed proportion of occupancy for each grain size\cr
      }
    }
 }
@@ -48,13 +38,9 @@ area of occupancy will be predicted.}
 Predict proportion of occupancy at fine grain sizes using parameters from an object of class \code{downscale} estimated from coarse grain sizes using \code{\link{downscale}}. Proportion of occupancy is converted to area of occupancy (AOO) by multiplying by the extent. There is also a simple plot function.
 }
 \details{
-The function takes the parameters for a downscaling model estimated
-  through \code{\link{downscale}} and uses the model to predict area of
-  occupancy at finer grain sizes. See \code{\link{downscale}} for details on
-  the downscaling models and their parameterisation. Plotting can be called
-  directly from \code{\link{predict.downscale}} or from \code{\link{plot.predict.downscale}}.
+The function takes the parameters for a downscaling model estimated through \code{\link{downscale}} and uses the model to predict area of occupancy at finer grain sizes. See \code{\link{downscale}} for details on the downscaling models and their parameterisation. Plotting can be called directly from \code{\link{predict.downscale}} or from \code{\link{plot.predict.downscale}}.
   
-  For predictions using the Thomas model, if the tolerance value is not sufficiently low it may lead to innacurate results. Typically, this will be indicated by fine grain sizes with higher predicted occupancies than those at larger grain sizes. In these cases try a lower tolerance value in the arguments.
+For predictions using the Thomas model, if the tolerance value is not sufficiently low it may lead to innacurate results. Typically, this will be indicated by fine grain sizes with higher predicted occupancies than those at larger grain sizes. In these cases try a lower tolerance value in the arguments.
 }
 \examples{
 ## example species data

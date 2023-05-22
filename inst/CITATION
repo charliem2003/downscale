@@ -1,21 +1,13 @@
-citHeader("To cite downscale in publications use:")
-
-citEntry(entry = "Article",
+bibentry(
+  "Article",
   title        = "{downscale}: An {R} Package for Downscaling Species Occupancy from Coarse-Grain Data to Predict Occupancy at Fine-Grain Sizes",
-  author       = personList(as.person("Charles J. Marsh"),
-                            as.person("Louise J. Barwell"),
-                            as.person("Yoni Gavish"),
-                            as.person("William E. Kunin")),
+  author       = "Charles J. Marsh, Louise J. Barwell, Yoni Gavish, William E. Kunin",
   journal      = "Journal of Statistical Software",
-  year         = "2018",
-  volume       = "86",
+  year         = 2018,
+  volume       = 86,
   number       = "Code Snippet 3",
-  pages        = "1--20",
+  pages        = 1-20,
   url          = "https://www.jstatsoft.org/v86/c03/",
-  
-  textVersion = 
-  paste("Charles J. Marsh, Louise J. Barwell, Yoni Gavish and William E. Kunin (2018)",
-  "Journal of Statistical Software, 86 (Code Snippet 3), 1-20.",
-  "https://www.jstatsoft.org/v86/c03/.")
+  doi          = "10.18637/jss.v086.c032",
 )
 

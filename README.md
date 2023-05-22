@@ -38,7 +38,8 @@ Or are available through the github wiki:
 This package was created as part of deliverable D3.2 of WP3 of the project: **EU-BON: Building the European Biodiversity Observation Network} - a 7th Framework Programme funded by the European Union under Contract No. 308454.**
 
 Author: Charles Marsh with input from Louise Barwell and Cang Hui.
-Maintainer: Charles Marsh <charliem2003@gmail.com>
+Maintainer: Charles Marsh <charlie.marsh@mailbox.com>
+Website: https://github.com/charliem2003/downscale
 
 For reporting bugs or requesting information please include *'downscale'* in the subject line.
 

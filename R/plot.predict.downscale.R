@@ -1,11 +1,12 @@
 ################################################################################
 # 
 # plot.predict.downscale.R
-# Version 1.2
-# 16/05/2023
+# Version 2.0
+# 22/05/2023
 #
 # Updates:
 #   16/05/2023: Simple reformatting
+#               inherits for checking class conditions
 #   13/03/2015: if 0's predicted don't plot them
 #
 # Plot the observed and predicted area of occupancy against grain size on
@@ -35,7 +36,7 @@ plot.predict.downscale <- function(x,
   predict.object <- x
   
   ### error checking
-  if (class(predict.object) != "predict.downscale") {
+  if (!inherits(predict.object, "predict.downscale")) {
     stop("Input data not of class 'predict.downscale'")
   }
   

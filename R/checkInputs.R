@@ -6,6 +6,7 @@
 #
 # Updates:
 #   18/05/2023: function added (moved from upgrain and upgrain.threshold)
+#               uses inherits for class conditions
 #
 # Error checking for inputs of upgrain and upgrain.threshold
 #
@@ -34,14 +35,14 @@ checkInputs <- function(inputFunction,
     }
     
     ### Error checking: if data frame or sfc needs cell width
-    if(class(atlas.data)[1] == "data.frame" | class(atlas.data)[1] == "sf") {
+    if(inherits(atlas.data, "data.frame") | inherits(atlas.data, "sf")) {
       if(is.null(cell.width)) {
         stop("If data is data.frame cell.width is required", call. = FALSE)
       }
     }
     
-    ### error checking: if data frame check column names are correct
-    if(class(atlas.data)[1] == "data.frame") {
+    ### Error checking: if data frame check column names are correct
+    if(inherits(atlas.data, "data.frame") & !inherits(atlas.data, "sf")) {
       if(ncol(atlas.data) != 3) {
         stop("Input data frame must contain three columns named 'x', 
            'y', and 'presence' in that order",
@@ -56,13 +57,13 @@ checkInputs <- function(inputFunction,
     }
     
     ### Error checking: raster and sp packages no longer supported
-    if(class(atlas.data)[1] == "SpatialPointsDataFrame") {
+    if(inherits(atlas.data, "SpatialPointsDataFrame")) {
       stop('SpatialPointsDataFrame and sp package no longer supported as of 5.0-0:
          Convert to an sf object using st_as_sf(your_object))',
            call. = FALSE)
     }
     
-    if(class(atlas.data)[1] == "RasterLayer") {
+    if(inherits(atlas.data, "RasterLayer")) {
       stop("'raster' package no longer supported as of 5.0-0: 
          Convert to a SpatRaster object using the 'terra' package instead",
            call. = FALSE)
@@ -132,7 +133,7 @@ checkInputs <- function(inputFunction,
   ### downscale
   
   if(inputFunction == "downscale") {
-    if(class(occupancies) != "upgrain") {
+    if(inherits(occupancies, "upgrain")) {
       ### Error checking: input data frame correct
       if(ncol(occupancies) != 2) {
         stop("Input data must be a data frame with two columns (cell area and 
@@ -173,24 +174,22 @@ checkInputs <- function(inputFunction,
   
   if(inputFunction == "hui.downscale") {
     ### Error checking: if data frame requires extent and cell width
-    if(class(atlas.data)[1] == "data.frame") {
+    if(inherits(atlas.data, "data.frame") & !inherits(atlas.data, "sf")) {
       if(is.null(extent)) {
         stop("Extent required if data input is data frame of coordinates",
              call. = FALSE)
       }
-      
       if(is.null(cell.width)) {
         stop("If data is data.frame cell.width is required", call. = FALSE)
       }
     }
     
     ### Error checking: if sf requires extent and cell width
-    if(class(atlas.data)[1] == "sf") {
+    if(inherits(atlas.data, "sf")) {
       if(is.null(extent)) {
         stop("Extent required if data input is sf spatial points object",
              call. = FALSE)
       }
-      
       if(is.null(cell.width)) {
         stop("If data is sf spatial points object cell.width is required",
              call. = FALSE)
@@ -217,7 +216,7 @@ checkInputs <- function(inputFunction,
     }
     
     ### If not an upgrain object
-    if(class(occupancies) != "upgrain") {
+    if(!inherits(occupancies, "upgrain")) {
       ### Error checking: extent given
       if(is.null(extent)) {
         stop("No extent given and occupancies is not of class 'upgrain'",
@@ -246,7 +245,7 @@ checkInputs <- function(inputFunction,
     }
     
     ### Error checking: if model = Hui then cell.width and extent must be present
-    if(class(occupancies) == "upgrain") {
+    if(inherits(occupancies, "upgrain")) {
       cell.width <- terra::res(occupancies$atlas.raster.stand)[1]
       extent <- occupancies$extent.stand
       

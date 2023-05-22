@@ -7,6 +7,7 @@
 # Updates:
 #   19/05/2023: v2.0 - CONVERTED TO TERRA AND SF
 #               error checking moved to checkInputs
+#               uses inherits for class conditions
 #   16/05/2023: renaming of optimisePars functions. Simple reformatting
 #   22/11/2021: basic reformatting
 #   08/05/2015: extent now required
@@ -42,7 +43,7 @@ downscale <- function(occupancies,
                       tolerance = 1e-6,
                       starting_params = NULL) {
   
-  if(class(occupancies) == "upgrain") {
+  if(inherits(occupancies, "upgrain")) {
     extent <- occupancies$extent.stand
     occupancies <- occupancies$occupancy.stand[, -2]
   }

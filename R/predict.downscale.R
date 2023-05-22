@@ -1,11 +1,12 @@
 ################################################################################
 # 
 # predict.downscale.R
-# Version 1.4
-# 16/05/2023
+# Version 2.0
+# 22/05/2023
 #
 # Updates:
 #   16/05/2023: Simple reformatting
+#               inherits for checking class conditions
 #   26/10/2021: uses on.exit to return to original par settings
 #   24/11/2016: Bug fixed with apply in error checking
 #   13/03/2015: if 0's predicted don't plot them
@@ -45,7 +46,7 @@ predict.downscale <- function(object,
   mod.fit <- object
   
   ### error checking of inputs
-  if (class(mod.fit) != "downscale"){
+  if(!inherits(mod.fit, "downscale")) {
     stop("Input data not of class 'downscale'")
   }
   

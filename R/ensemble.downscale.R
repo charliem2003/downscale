@@ -7,6 +7,7 @@
 # Updates:
 #   22/05/2023: v2.0 - CONVERTED TO TERRA AND SF
 #               error checking moved to checkInputs
+#               uses inherits for class conditions
 #   16/05/2023: Simple reformatting
 #   26/10/2021: uses on.exit to return to original par settings
 #   24/11/2016: Bug fixed with apply in error checking
@@ -77,7 +78,7 @@ ensemble.downscale <- function(occupancies,
   }
   
   ### extract info from upgrain object
-  if(class(occupancies) == "upgrain") {
+  if(inherits(occupancies, "upgrain")) {
     cell.width <- terra::res(occupancies$atlas.raster.stand)[1]
     extent <- occupancies$extent.stand
   }

@@ -81,8 +81,7 @@ predict(logis,
         plot = TRUE)
 }
 \author{
-Charles Marsh <\email{charliem2003@gmail.com}> with input from
-  Louise Barwell.
+Charles Marsh <\email{charlie.marsh@mailbox.org}> with input from Louise Barwell.
 }
 \references{
 Azaele, S., Cornell, S.J., & Kunin, W.E. (2012). Downscaling

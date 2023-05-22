@@ -80,15 +80,19 @@ To carry out downscaling with the Hui model (Hui et al. 2006, 2009) or upgrainin
 # Package tutorial
 
 First, we must download the downscale package from CRAN if not already done so.
-
 ```{r eval = FALSE}
 install.packages("downscale")
 ```
 
 Then load in the library
-
 ```{r eval = FALSE}
 library("downscale")
+```
+
+We will also make use of the `terra` and `sf` libraries throughout the tutorial for manipulating spatial data
+```{r}
+library("sf")
+library("terra")
 ```
 
 ## A quick example
@@ -402,7 +406,6 @@ The library `rgbif` will automatically harvest GBIF data for a desired species f
 ```{r}
 ## load in the necessary libraries
 library(rgbif)
-library(sf)
 ```
 
 We’ll get the UK records for the chalkhill blue (*Polyommatus coridon*), a butterfly species with a patchy breeding distribution largely in the south of the UK. We will confine ourselves to records only from the UK (`gbifopts = list(country = "GB")`). For this tutorial I have saved this dataset within the package, but you can repeat the download yourself with the following code. See `?occ_search` to explore the options of how to select different types and certainty of occurrence points.
@@ -427,17 +430,15 @@ records <- read.table(recordsFile, header = TRUE)
 Whichever way you have got the data (either downloading your own set or loading in the data frame stored in the package), for our purposes we only need to extract the coordinates of the occurrences.
 ```{r}
 recordsCoords <- st_as_sf(records,
-                          coords = c("decimalLongitude", "decimalLatitude"),
-                          crs = crs("+proj=longlat +datum=WGS84 +ellps=WGS84"))
+                          coords = c("decimalLongitude", "decimalLatitude"))
+st_crs(recordsCoords) <- "+proj=longlat +datum=WGS84 +ellps=WGS84"
 ```
 
-The coordinates are in latitude/longitude based upon the WGS84 coordinate system. However, a lot of the point records for UK butterflies are collected based upon the British National Grid ("OSGB 1936"), which can be seen in the grid-like pattern of some of the points so it makes sense to reproject the points to this coordinate system (the EPSG code is 27700 and details can be found at https://epsg.io/27700). As an added advantage we can also specify the units as km to make our upgraining easier.
+The coordinates are in latitude/longitude based upon the WGS84 coordinate system. However, a lot of the point records for UK butterflies are collected based upon the British National Grid ("OSGB 1936"), which can be seen in the grid-like pattern of some of the points so it makes sense to reproject the points to this coordinate system (the EPSG code is 27700 and details can be found at https://epsg.io/27700 ). As an added advantage we can also specify the units as km to make our upgraining easier.
 ```{r}
 ## reproject the coordinates to British National Grid
 recordsCoords <- st_transform(recordsCoords,
-                              crs = st_crs("+proj=tmerc +lat_0=49 +lon_0=-2 
-                                        +k=0.9996012717 +x_0=400000 +y_0=-100000 
-                                        +ellps=airy +units=km +no_defs"))
+                              crs = "+init=epsg:27700 +units=km")
 ```
 
 We can have a quick look at the point records if we like.
@@ -462,7 +463,7 @@ gbif_raster <- rast(xmin = coordsExtent$xmin - (cellWidth / 2),
                     res = cellWidth)
                       
 ## assign cells with presence records as 1
-gbif_raster <- rasterize(recordsCoords, gbif_raster, field = 1)
+gbif_raster <- rasterize(recordsCoords, gbif_raster, field = 1, fun = "min")
 
 ## convert cells with NA (no records) to 0
 gbif_raster[is.na(gbif_raster)] <- 0

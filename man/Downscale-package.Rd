@@ -45,7 +45,7 @@ This package was created as part of deliverable D3.2 of WP3 of the project: \bol
 \author{
 Charles Marsh with input from Louise Barwell and Cang Hui.
 
-Maintainer: Charles Marsh <charliem2003@gmail.com>
+Maintainer: Charles Marsh <charlie.marsh@mailbox.com>
 
 Website: https://github.com/charliem2003/downscale
 

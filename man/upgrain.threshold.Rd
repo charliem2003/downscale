@@ -100,7 +100,7 @@ thresh$Thresholds
 head(thresh$Data)
 }
 \author{
-Charles Marsh <\email{charliem2003@gmail.com}>
+Charles Marsh <\email{charlie.marsh@mailbox.org}>
 }
 \references{
 Groom, Q., Marsh, C.J., Gavish, Y. Kunin, W.E. (2018). How to predict fine resolution occupancy from coarse occupancy data, \emph{Methods in Ecology and Evolution}. 9(11), 2273-2284.

@@ -79,8 +79,7 @@ hui$predicted
 hui.stand$predicted
 }
 \author{
-Charles Marsh <\email{charliem2003@gmail.com}> with input from
-  Louise Barwell and Cang Hui.
+Charles Marsh <\email{charlie.marsh@mailbox.org}> with input from Louise Barwell and Cang Hui.
 }
 \references{
 Hui, C. (2009). On the scaling patterns of species spatial distribution and association. \emph{Journal of Theoretical Biology} 261, 481-487.

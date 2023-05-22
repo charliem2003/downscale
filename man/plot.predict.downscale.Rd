@@ -63,5 +63,5 @@ plot(logis.pred,
 }
 
 \author{
-Charles Marsh <\email{charliem2003@gmail.com}>.
+Charles Marsh <\email{charlie.marsh@mailbox.org}>.
 }

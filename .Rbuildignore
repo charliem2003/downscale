@@ -9,3 +9,4 @@ downscale.Rproj
 ^.gitignore
 ^\.git
 ^\.github$
+^cran-comments\.md$

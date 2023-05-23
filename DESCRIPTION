@@ -1,7 +1,7 @@
 Package: downscale
 Type: Package
 Title: Downscaling Species Occupancy
-Version: 5.0-0
+Version: 5.0.0
 Date: 2023-05-22
 Authors@R: person("Charles", "Marsh", email = "charlie.marsh@mailbox.org", role = c("aut", "cre"), comment = c(ORCID="0000-0002-0281-3115"))
 Maintainer: Charles Marsh <charlie.marsh@mailbox.org>
@@ -46,5 +46,6 @@ Collate:
     'hui.downscale.R'
     'HuiFunctions.R'
     'upgrain.threshold.R'
+    'zzz.R'
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr

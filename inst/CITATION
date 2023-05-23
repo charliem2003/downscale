@@ -1,13 +1,12 @@
 bibentry(
   "Article",
-  title        = "{downscale}: An {R} Package for Downscaling Species Occupancy from Coarse-Grain Data to Predict Occupancy at Fine-Grain Sizes",
+  title        = "{downscale}: An {R} package for downscaling species occupancy from coarse-grain data to predict occupancy at fine-grain sizes",
   author       = "Charles J. Marsh, Louise J. Barwell, Yoni Gavish, William E. Kunin",
   journal      = "Journal of Statistical Software",
   year         = 2018,
   volume       = 86,
   number       = "Code Snippet 3",
-  pages        = 1-20,
-  url          = "https://www.jstatsoft.org/v86/c03/",
+  pages        = 1--20,
   doi          = "10.18637/jss.v086.c03",
 )
 

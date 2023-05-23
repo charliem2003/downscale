@@ -8,6 +8,6 @@ bibentry(
   number       = "Code Snippet 3",
   pages        = 1-20,
   url          = "https://www.jstatsoft.org/v86/c03/",
-  doi          = "10.18637/jss.v086.c032",
+  doi          = "10.18637/jss.v086.c03",
 )
 

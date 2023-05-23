@@ -111,12 +111,12 @@ all_sampled$occupancy.orig
 
 ## if data is an sf spatial points object
 presence <- data.frame(presence = atlas.data$presence)
-spdf <- sf::st_as_sf(atlas.data, coords = c("x", "y")
+spdf <- sf::st_as_sf(atlas.data, coords = c("x", "y"))
                                
 all_sampled <- upgrain(atlas.data = spdf,
                        cell.width= 10,
                        scales = 3,
-                       method = "All_Sampled")  
+                       method = "All_Sampled")
 }
 \author{
 Charles Marsh <\email{charlie.marsh@mailbox.org}>

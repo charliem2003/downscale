@@ -1,11 +1,11 @@
 ^.*\.Rproj$         # Automatically added by RStudio,
 ^\.Rproj\.user$     # used for temporary files. 
-^NEWS\.md$          # A news file
-^TODO\.md$          # A to do file
-^downscale.Rproj
-^\.RProj.user
-^.gitignore
-^README.md
+downscale.Rproj
 ^.Rhistory
+^README\.Rmd$       # An Rmd file used to generate README.md
+^LICENSE\.md$       # Full text of the license
+^cran-comments\.md$ # Comments for CRAN submission
+^\.github$          # GitHub Actions workflows
+^.gitignore
 ^\.git
-
+^\.github$

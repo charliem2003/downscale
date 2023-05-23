@@ -8,5 +8,4 @@ downscale.Rproj
 ^\.github$          # GitHub Actions workflows
 ^.gitignore
 ^\.git
-^\.github$
-^cran-comments\.md$
+^revdep$

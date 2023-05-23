@@ -430,8 +430,8 @@ records <- read.table(recordsFile, header = TRUE)
 Whichever way you have got the data (either downloading your own set or loading in the data frame stored in the package), for our purposes we only need to extract the coordinates of the occurrences.
 ```{r}
 recordsCoords <- st_as_sf(records,
-                          coords = c("decimalLongitude", "decimalLatitude"))
-st_crs(recordsCoords) <- "+proj=longlat +datum=WGS84 +ellps=WGS84"
+                          coords = c("decimalLongitude", "decimalLatitude"),
+                          crs = 4326)
 ```
 
 The coordinates are in latitude/longitude based upon the WGS84 coordinate system. However, a lot of the point records for UK butterflies are collected based upon the British National Grid ("OSGB 1936"), which can be seen in the grid-like pattern of some of the points so it makes sense to reproject the points to this coordinate system (the EPSG code is 27700 and details can be found at https://epsg.io/27700 ). As an added advantage we can also specify the units as km to make our upgraining easier.
@@ -516,7 +516,6 @@ So far we have simply drawn a rectangle around our points, but perhaps we have a
 ### read in the shapefile
 uk <- system.file("extdata", "UK.shp", package = "downscale")
 uk <- st_read(uk)
-st_crs(uk) <- crs(recordsCoords)
 
 ## plot our GBIF records on top of the UK polygon
 plot(st_geometry(uk), axes = TRUE)

@@ -1,4 +1,4 @@
-# downscale 5.0-0
+# downscale 5.0.0
 
 * SWITCHING TO terra + sf FROM raster + sp
 * - Simple reformatting

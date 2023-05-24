@@ -74,6 +74,15 @@ upgrain.threshold <- function(atlas.data,
     atlas.data <- sf::st_as_sf(atlas.data, coords = c("x", "y"))
   }
   
+  ### if sp object convert to sf
+  if(inherits(atlas.data, "SpatialPointsDataFrame")) {
+    warning("The 'sp' package is becoming obsolete.
+In future downscale updates 'SpatialPointsDataFrame' objects will be phased out.
+We recommend using the 'sf' package instead",
+            call. = FALSE)
+    atlas.data <- sf::st_as_sf(atlas.data)
+  }
+  
   ### rasterize spatial points
   if(class(atlas.data)[1] == "sf") {
     ext <- sf::st_bbox(atlas.data)
@@ -86,6 +95,16 @@ upgrain.threshold <- function(atlas.data,
                                               field = "presence", fun = max)
   }
   
+  ### if raster object convert to terra
+  if(inherits(atlas.data, "RasterLayer")) {
+    warning("The 'raster' package is becoming obsolete.
+In future downscale updates using 'raster' class objects will be phased out.
+We recommend using a 'SpatRaster' object using the 'terra' package instead",
+            call. = FALSE)
+    atlas.data <- terra::rast(atlas.data)
+  }
+  
+  ### if raster object
   if(class(atlas.data)[1] == "SpatRaster") {
     atlas_raster <- atlas.data
   }

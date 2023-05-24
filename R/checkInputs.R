@@ -56,18 +56,18 @@ checkInputs <- function(inputFunction,
       }
     }
     
-    ### Error checking: raster and sp packages no longer supported
-    if(inherits(atlas.data, "SpatialPointsDataFrame")) {
-      stop('SpatialPointsDataFrame and sp package no longer supported as of 5.0-0:
-         Convert to an sf object using st_as_sf(your_object))',
-           call. = FALSE)
-    }
-    
-    if(inherits(atlas.data, "RasterLayer")) {
-      stop("'raster' package no longer supported as of 5.0-0: 
-         Convert to a SpatRaster object using the 'terra' package instead",
-           call. = FALSE)
-    }
+    # ### Error checking: raster and sp packages no longer supported
+    # if(inherits(atlas.data, "SpatialPointsDataFrame")) {
+    #   stop('SpatialPointsDataFrame and sp package no longer supported as of 5.0-0:
+    #      Convert to an sf object using st_as_sf(your_object))',
+    #        call. = FALSE)
+    # }
+    # 
+    # if(inherits(atlas.data, "RasterLayer")) {
+    #   stop("'raster' package no longer supported as of 5.0-0: 
+    #      Convert to a SpatRaster object using the 'terra' package instead",
+    #        call. = FALSE)
+    # }
   }
   
   ##############################################################################

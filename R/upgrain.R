@@ -296,23 +296,39 @@ We recommend using a 'SpatRaster' object using the 'terra' package instead",
                 col = c("white", "white"),
                 legend = FALSE, 
                 axes = FALSE,
+                mar = c(3, 3, 3.5, 3),
                 main = paste0("Original atlas data:\n cell area = ", 
                               original$Cell.area[1]))
     terra::plot(atlas_raster,
                 col = c("white", "red"),
                 legend = FALSE, 
                 axes = FALSE,
+                mar = c(3, 3, 3.5, 3),
                 colNA = "dark grey",
                 add = TRUE)
+    rect(xleft   = terra::ext(atlas_raster)$xmin,
+         ybottom = terra::ext(atlas_raster)$ymin,
+         xright  = terra::ext(atlas_raster)$xmax,
+         ytop    = terra::ext(atlas_raster)$ymax)
+    
+    rect(xleft   = terra::ext(atlas_raster_extend)$xmin,
+         ybottom = terra::ext(atlas_raster_extend)$ymin,
+         xright  = terra::ext(atlas_raster_extend)$xmax,
+         ytop    = terra::ext(atlas_raster_extend)$ymax, lty = 2)
     
     ########### Plot 2 - standardised atlas data - atlas grain size
     terra::plot(atlas_thresh,
                 col = c("white", "red"),
                 legend = FALSE, 
                 axes = FALSE,
+                mar = c(3, 3, 3.5, 3),
                 colNA = "dark grey",
                 main = paste0("Standardised atlas data:\n cell area = ", 
                               original$Cell.area[1]))
+    rect(xleft   = terra::ext(atlas_thresh)$xmin,
+         ybottom = terra::ext(atlas_thresh)$ymin,
+         xright  = terra::ext(atlas_thresh)$xmax,
+         ytop    = terra::ext(atlas_thresh)$ymax)
     
     for(i in 1:scales) {
       scaled_raster <- terra::aggregate(atlas_thresh,
@@ -325,8 +341,13 @@ We recommend using a 'SpatRaster' object using the 'terra' package instead",
                   colNA = "dark grey",
                   legend = FALSE, 
                   axes = FALSE,
+                  mar = c(3, 3, 3.5, 3),
                   main = paste0("Standardised atlas data:\n cell area = ", 
-                                original$Cell.area[i + 1]))    
+                                original$Cell.area[i + 1]))
+      rect(xleft   = terra::ext(scaled_raster)$xmin,
+           ybottom = terra::ext(scaled_raster)$ymin,
+           xright  = terra::ext(scaled_raster)$xmax,
+           ytop    = terra::ext(scaled_raster)$ymax)
     }
   }
   

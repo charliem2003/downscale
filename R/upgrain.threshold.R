@@ -287,7 +287,8 @@ We recommend using a 'SpatRaster' object using the 'terra' package instead",
       terra::plot(atlas_raster_extend, axes = FALSE,
                   colNA = rgb(0.5, 0.5, 0.5),
                   col = c(rgb(1, 1, 1), rgb(1, 0, 0)),
-                  legend = FALSE)
+                  legend = FALSE,
+                  mar = c(5.5, 1, 3.5, 1))
       title(main = paste(selection[j], "\n", "Threshold = ", thresh), line = 1)
       
       ### subtitle with statistics
@@ -321,13 +322,13 @@ We recommend using a 'SpatRaster' object using the 'terra' package instead",
       ### add in boundary polygon of thresholded map
       if(!is.null(boundary_poly)) {
         if(length(boundary_poly) >  0) {
-          plot(boundary_poly, add = TRUE)
+          terra::plot(boundary_poly, add = TRUE)
         }
         if(length(boundary_poly) == 0) {
-          rect(xleft   = ext(atlas_raster_extend)$xmin,
-               ybottom = ext(atlas_raster_extend)$ymin,
-               xright  = ext(atlas_raster_extend)$xmax,
-               ytop    = ext(atlas_raster_extend)$ymax)
+          rect(xleft   = terra::ext(atlas_raster_extend)$xmin,
+               ybottom = terra::ext(atlas_raster_extend)$ymin,
+               xright  = terra::ext(atlas_raster_extend)$xmax,
+               ytop    = terra::ext(atlas_raster_extend)$ymax)
         }
       }
     }

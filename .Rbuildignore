@@ -5,6 +5,7 @@ downscale.Rproj
 ^README\.Rmd$       # An Rmd file used to generate README.md
 ^LICENSE\.md$       # Full text of the license
 cran-commentsmd     # Comments for CRAN submission
+^cran-comments\.md$
 ^\.github$          # GitHub Actions workflows
 ^.gitignore
 ^\.git

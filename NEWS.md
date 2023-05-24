@@ -1,5 +1,5 @@
 # downscale 5.0.0
-* 23/05/2023
+* 24/05/2023
 * SWITCHING TO terra + sf FROM raster + sp
 * - Simple reformatting
 * - optimisation functions renamed to optimisePars**

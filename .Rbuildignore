@@ -9,4 +9,6 @@ cran-commentsmd     # Comments for CRAN submission
 ^\.github$          # GitHub Actions workflows
 ^.gitignore
 ^\.git
+CRAN-SUBMISSION
 ^revdep$
+^CRAN-SUBMISSION$

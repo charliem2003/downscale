@@ -10,7 +10,7 @@ hui.downscale(atlas.data, cell.width, new.areas, extent = NULL,
 
 \item{cell.width}{the cell width of the atlas data.}
 
-\item{new.areas}{vector of grain sizes as cell area (in same units as cell.width but squared e.g. km^{2}) at fine scales for model prediction.}
+\item{new.areas}{vector of grain sizes as cell area (in same units as cell.width but squared e.g. \eqn{km^2}) at fine scales for model prediction.}
 
 \item{extent}{the extent of the atlas data in same units as \code{cell.areas}. If the input data is of class \code{"upgrain"} this can be left as \code{NULL}.}
 

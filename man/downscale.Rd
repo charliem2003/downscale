@@ -6,7 +6,7 @@ downscale(occupancies, model, extent = NULL, tolerance = 1e-06,
           starting_params = NULL)
 }
 \arguments{
-\item{occupancies}{Either a data frame containing two columns or an object of class \code{"upgrain"} from the \code{\link{upgrain}} function. If using a data frame the first column must be the grain sizes (cell area in squared units e.g. km^{2}). The second column is the proportion of occupancies at each grain size.}
+\item{occupancies}{Either a data frame containing two columns or an object of class \code{"upgrain"} from the \code{\link{upgrain}} function. If using a data frame the first column must be the grain sizes (cell area in squared units e.g. \eqn{km^2}). The second column is the proportion of occupancies at each grain size.}
 
 \item{model}{selected downscaling model, chosen from one of \code{"Nachman"},
 \code{"PL"}, \code{"Logis"}, \code{"Poisson"}, \code{"NB"}, \code{"GNB"},

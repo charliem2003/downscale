@@ -67,7 +67,7 @@ Nine downscaling models are available (and also see \code{\link{hui.downscale}} 
 }
 \if{latex}{\figure{Equations.png}{options: width=13cm}}
 
-The finite negative binomial model (\code{"FNB"}) incorporates several gamma functions. This may result in integers larger than is possible to store in R. Therefore multiple precision floating point numbers (\code{\link{mpfr}} function in package \pkg{Rmpfr}) are used to make calculations possible.
+The finite negative binomial model (\code{"FNB"}) incorporates several gamma functions. This may result in integers larger than is possible to store in R. Therefore multiple precision floating point numbers (\code{\link[Rmpfr]{mpfr}} function in package \pkg{Rmpfr}) are used to make calculations possible.
 
 The Thomas model incorporates spatial point processes in order to estimate species aggregations. This involves multi-dimensional integration which may be time-consuming. Users can alter the tolerance value during the integration process - a smaller value will give more accurate estimates but longer processing times.
  

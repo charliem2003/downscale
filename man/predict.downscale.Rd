@@ -7,7 +7,7 @@
 \arguments{
 \item{object}{a fitted object of class \code{'downscale'}.}
 
-\item{new.areas}{vector of grain sizes (in squared units e.g. km^{2}) for which area of occupancy will be predicted.}
+\item{new.areas}{vector of grain sizes (in squared units e.g. \eqn{km^2}) for which area of occupancy will be predicted.}
 
 \item{tolerance}{only applicable for the \code{Thomas} model. The tolerance used during integration in the Thomas model during optimisation of parameters. Lower numbers allow for greater accuracy but require longer processing times (default = \code{1e-6}).}
 

@@ -8,9 +8,9 @@ ensemble.downscale(occupancies, new.areas, extent, cell.width = NULL,
                    verbose = TRUE)
 }
 \arguments{
-\item{occupancies}{Either a data frame containing two columns or an object of class "upgrain" from the upgrain function. If using the \code{Hui} model (or \code{model = "all"}) occupancies must be of class \code{"upgrain"}. If using a data frame the first column must be the grain sizes (cell area in squared units e.g. km^2). The second column is the proportion of occupancies at each grain size.}
+\item{occupancies}{Either a data frame containing two columns or an object of class "upgrain" from the upgrain function. If using the \code{Hui} model (or \code{model = "all"}) occupancies must be of class \code{"upgrain"}. If using a data frame the first column must be the grain sizes (cell area in squared units e.g. \eqn{km^2}). The second column is the proportion of occupancies at each grain size.}
 
-\item{new.areas}{vector of grain sizes (in squared units e.g. km^{2}) for which area of occupancy will be predicted.}
+\item{new.areas}{vector of grain sizes (in squared units e.g. \eqn{km^2}) for which area of occupancy will be predicted.}
 
 \item{extent}{total area in same units as occupancy. If using an object of class "upgrain", this is automatically inputted.}
 

@@ -1,3 +1,15 @@
+# downscale 5.1.2
+* 18/09/2025
+* Corrections to some error checks
+
+# downscale 5.1.1
+* 17/09/2025
+* Deleted package info from Downscale-package.Rd as requested by CRAN
+
+# downscale 5.1.0
+* 17/09/2025
+* Pull request (villegar) fixes to missing curly brackets in markdown docs
+
 # downscale 5.0.0
 * 24/05/2023
 * SWITCHING TO terra + sf FROM raster + sp

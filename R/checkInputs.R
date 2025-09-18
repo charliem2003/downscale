@@ -14,7 +14,7 @@
 
 checkInputs <- function(inputFunction,
                         atlas.data,
-                        cell.width,
+                        cell.width = NULL,
                         scales,
                         threshold,
                         thresholds,
@@ -22,7 +22,7 @@ checkInputs <- function(inputFunction,
                         occupancies,
                         model,
                         models,
-                        extent) {
+                        extent = NULL) {
   
   ##############################################################################
   ### both upgrain and upgrain.threshold
@@ -37,7 +37,7 @@ checkInputs <- function(inputFunction,
     ### Error checking: if data frame or sfc needs cell width
     if(inherits(atlas.data, "data.frame") | inherits(atlas.data, "sf")) {
       if(is.null(cell.width)) {
-        stop("If data is data.frame cell.width is required", call. = FALSE)
+        stop("If data is data.frame or sf object cell.width is required", call. = FALSE)
       }
     }
     
@@ -133,7 +133,7 @@ checkInputs <- function(inputFunction,
   ### downscale
   
   if(inputFunction == "downscale") {
-    if(inherits(occupancies, "upgrain")) {
+    if(!inherits(occupancies, "upgrain")) {
       ### Error checking: input data frame correct
       if(ncol(occupancies) != 2) {
         stop("Input data must be a data frame with two columns (cell area and 

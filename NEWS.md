@@ -1,3 +1,7 @@
+# downscale 5.1.3
+* 18/09/2025
+* Removes sapply warning in predict.downscale
+
 # downscale 5.1.2
 * 18/09/2025
 * Corrections to some error checks

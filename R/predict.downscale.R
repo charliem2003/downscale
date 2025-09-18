@@ -1,10 +1,11 @@
 ################################################################################
 # 
 # predict.downscale.R
-# Version 2.0
-# 22/05/2023
+# Version 5.1.3
+# 18/09/2025
 #
 # Updates:
+#   18/09/2025: Removes unnecessary sapply warning
 #   16/05/2023: Simple reformatting
 #               inherits for checking class conditions
 #   26/10/2021: uses on.exit to return to original par settings
@@ -90,7 +91,7 @@ predict.downscale <- function(object,
   }
   
   if(!anyNA(expected$Occupancy) & nrow(expected) > 1) {
-    if(any(sapply(expected$AOO, FUN = function(x) { AOO[x] > AOO[x + 1] }),
+    if(any(unlist(sapply(expected$AOO, FUN = function(x) { AOO[x] > AOO[x + 1] })),
            na.rm = TRUE)) {
       warning("Scaling is inconsistent:
                \nlarger occupancies predicted at finer grain sizes.
